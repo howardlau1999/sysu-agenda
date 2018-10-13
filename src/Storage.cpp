@@ -92,7 +92,6 @@ int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
 bool Storage::sync() { return writeToFile(); }
 
 std::string csv_value(const std::string& value) {
-    std::string::size_type pos;
     std::string formatted;
     for (auto ch : value) {
         formatted += ch;
@@ -114,14 +113,15 @@ bool Storage::writeToFile() {
 
     for (auto meeting : m_meetingList) {
         meeting_file << '"' << csv_value(meeting.getSponsor()) << '"' << ",";
-        meeting_file << '"';
         auto participators = meeting.getParticipator();
         std::string participators_list = "";
         for (int i = 0; i < participators.size(); ++i) {
             if (i) participators_list += ",";
+            participators_list += '"';
             participators_list += csv_value(participators[i]);
+            participators_list += '"';
         }
-        meeting_file << csv_value(participators_list) << '"' << ',';
+        meeting_file << '"' << csv_value(participators_list) << '"' << ',';
         meeting_file << Date::dateToString(meeting.getStartDate()) << ",";
         meeting_file << Date::dateToString(meeting.getEndDate()) << ",";
         meeting_file << '"' << csv_value(meeting.getTitle()) << '"'
