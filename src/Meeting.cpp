@@ -1,5 +1,13 @@
 #include "Meeting.hpp"
 #include <algorithm>
+Meeting::Meeting(std::string t_sponsor,
+                 std::vector<std::string> t_participators, Date t_startTime,
+                 Date t_endTime, std::string t_title)
+    : m_sponsor(t_sponsor),
+      m_participators(t_participators),
+      m_startDate(t_startTime),
+      m_endDate(t_endTime),
+      m_title(t_title){};
 
 Meeting::Meeting(const Meeting& t_meeting) {
     m_sponsor = t_meeting.m_sponsor;
@@ -9,57 +17,31 @@ Meeting::Meeting(const Meeting& t_meeting) {
     m_title = t_meeting.m_title;
 }
 
-std::string Meeting::getSponsor() const {
-    return m_sponsor;
-}
+std::string Meeting::getSponsor() const { return m_sponsor; }
 
-
-void Meeting::setSponsor(std::string t_sponsor) {
-    m_sponsor = t_sponsor;
-}
-
+void Meeting::setSponsor(std::string t_sponsor) { m_sponsor = t_sponsor; }
 
 std::vector<std::string> Meeting::getParticipator() const {
     return m_participators;
 }
 
-
 void Meeting::setParticipator(std::vector<std::string> t_participators) {
     m_participators = t_participators;
 }
 
+Date Meeting::getStartDate() const { return m_startDate; }
 
-Date Meeting::getStartDate() const {
-    return m_startDate;
-}
+void Meeting::setStartDate(Date t_startDate) { m_startDate = t_startDate; }
 
+Date Meeting::getEndDate() const { return m_endDate; }
 
-void Meeting::setStartDate(Date t_startDate) {
-    m_startDate = t_startDate;
-}
+void Meeting::setEndDate(Date t_endDate) { m_endDate = t_endDate; }
 
+std::string Meeting::getTitle() const { return m_title; }
 
-Date Meeting::getEndDate() const {
-    return m_endDate;
-}
-
-
-void Meeting::setEndDate(Date t_endDate) {
-    m_endDate = t_endDate;
-}
-
-
-std::string Meeting::getTitle() const {
-    return m_title;
-}
-
-
-void Meeting::setTitle(std::string t_title) {
-    m_title = t_title;
-}
-
-
+void Meeting::setTitle(std::string t_title) { m_title = t_title; }
 
 bool Meeting::isParticipator(const std::string t_username) const {
-    return std::find(m_participators.begin(), m_participators.end(), t_username) != m_participators.end();
+    return std::find(m_participators.begin(), m_participators.end(),
+                     t_username) != m_participators.end();
 }

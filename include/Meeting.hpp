@@ -15,9 +15,7 @@ public:
   *   @brief constructor with argument
   */
   Meeting(std::string t_sponsor, std::vector<std::string> t_participators, Date t_startTime,
-          Date t_endTime, std::string t_title) : m_sponsor(t_sponsor), m_participators(t_participators), m_startDate(t_startTime),
-          m_endDate(t_endTime), m_title(t_title) {};
-
+          Date t_endTime, std::string t_title);
   /**
   * @brief copy constructor of left value
   */

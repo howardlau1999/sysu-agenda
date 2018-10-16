@@ -1,22 +1,18 @@
 #include "Storage.hpp"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <sstream>
-#include <iostream>
 #include "Path.hpp"
 
 std::shared_ptr<Storage> Storage::m_instance = nullptr;
 
-Storage::Storage() {
-    readFromFile();
-}
+Storage::Storage() { readFromFile(); }
 
-Storage::~Storage() {
-    sync();
-}
+Storage::~Storage() { sync(); }
 
-std::shared_ptr<Storage> Storage::getInstance() { 
+std::shared_ptr<Storage> Storage::getInstance() {
     if (m_instance == nullptr) {
         m_instance = std::shared_ptr<Storage>(new Storage);
     }
@@ -31,9 +27,10 @@ void Storage::createUser(const User &t_user) {
 std::list<User> Storage::queryUser(
     std::function<bool(const User &)> filter) const {
     std::list<User> users;
-    std::copy_if(m_userList.cbegin(), m_userList.cend(), back_inserter(users),
-                 filter);
-    return users;
+    if (!m_userList.empty())
+        std::copy_if(m_userList.cbegin(), m_userList.cend(),
+                     back_inserter(users), filter);
+    return std::move(users);
 }
 
 int Storage::updateUser(std::function<bool(const User &)> filter,
@@ -41,17 +38,19 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
     int count = 0;
     auto iter = m_userList.begin();
     auto end = m_userList.end();
-    while ((iter = std::find_if(iter, end, filter)) != end) {
-        ++count;
-        switcher(*iter);
-    }
+    if (!m_userList.empty())
+        while ((iter = std::find_if(iter, end, filter)) != end) {
+            ++count;
+            switcher(*iter);
+        }
     m_dirty = true;
     return count;
 }
 
 int Storage::deleteUser(std::function<bool(const User &)> filter) {
     int old_size = m_userList.size();
-    std::remove_if(m_userList.begin(), m_userList.end(), filter);
+    if (!m_userList.empty())
+        m_userList.erase(std::remove_if(m_userList.begin(), m_userList.end(), filter), m_userList.end());
     m_dirty = true;
     return old_size - m_userList.size();
 }
@@ -64,9 +63,10 @@ void Storage::createMeeting(const Meeting &t_meeting) {
 std::list<Meeting> Storage::queryMeeting(
     std::function<bool(const Meeting &)> filter) const {
     std::list<Meeting> meetings;
-    std::copy_if(m_meetingList.cbegin(), m_meetingList.cend(),
-                 back_inserter(meetings), filter);
-    return meetings;
+    if (!m_meetingList.empty())
+        std::copy_if(m_meetingList.cbegin(), m_meetingList.cend(),
+                     back_inserter(meetings), filter);
+    return std::move(meetings);
 }
 
 int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
@@ -74,30 +74,32 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
     int count = 0;
     auto iter = m_meetingList.begin();
     auto end = m_meetingList.end();
-    while ((iter = std::find_if(iter, end, filter)) != end) {
-        ++count;
-        switcher(*iter);
-    }
+    if (!m_meetingList.empty())
+        while ((iter = std::find_if(iter, end, filter)) != end) {
+            ++count;
+            switcher(*iter);
+        }
     m_dirty = true;
     return count;
 }
 
 int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
     int old_size = m_meetingList.size();
-    std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter);
+    if (!m_meetingList.empty())
+        m_meetingList.erase(std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter), m_meetingList.end());
     m_dirty = true;
     return old_size - m_meetingList.size();
 }
 
 bool Storage::sync() { return writeToFile(); }
 
-std::string csv_value(const std::string& value) {
+std::string csv_value(const std::string &value) {
     std::string formatted;
     for (auto ch : value) {
         formatted += ch;
         if (ch == '"') formatted += ch;
     }
-    return formatted;
+    return std::move(formatted);
 }
 
 bool Storage::writeToFile() {
@@ -136,17 +138,15 @@ std::list<std::list<std::string>> parse_csv(std::istream &file) {
     while (!file.eof()) {
         std::list<std::string> line_items;
         bool same_line = true;
-        while (same_line && !file.eof()) {
+        int ch;
+        while (same_line && (ch = file.get()) != EOF) {
             std::string item;
-            int ch = file.get();
-            if (ch == '\377' || ch == '\n') break;
             if (ch == '"') {
-                while (!file.eof()) {
-                    int ch = file.get();
+                while ((ch = file.get()) != EOF) {
                     if (ch == '"') {
                         ch = file.get();
                         if (ch == ',') break;
-                        if (ch == '\n'|| ch == '\377') {
+                        if (ch == '\n' || ch == EOF) {
                             same_line = false;
                             break;
                         }
@@ -156,10 +156,9 @@ std::list<std::list<std::string>> parse_csv(std::istream &file) {
                 line_items.push_back(item);
             } else {
                 item += ch;
-                while (!file.eof()) {
-                    int ch = file.get();
+                while ((ch = file.get()) != EOF) {
                     if (ch == ',') break;
-                    if (ch == '\n' || ch == '\377') {
+                    if (ch == '\n') {
                         same_line = false;
                         break;
                     }
@@ -168,8 +167,7 @@ std::list<std::list<std::string>> parse_csv(std::istream &file) {
                 line_items.push_back(item);
             }
         }
-        if (!line_items.empty())
-            lines.push_back(line_items);
+        if (!line_items.empty()) lines.push_back(line_items);
     }
     return lines;
 }

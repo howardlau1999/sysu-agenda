@@ -3,13 +3,12 @@
 #include "Storage.hpp"
 
 AgendaService::AgendaService() { m_storage = Storage::getInstance(); }
-
+AgendaService::~AgendaService() { m_storage->sync(); }
 bool AgendaService::userLogIn(const std::string userName,
                               const std::string password) {
     auto users =
         m_storage->queryUser([userName, password](const User& user) -> bool {
-            user.getName() == userName;
-            user.getPassword() == password;
+            return user.getName() == userName && user.getPassword() == password;
         });
     return users.size() == 1;
 }
@@ -52,7 +51,7 @@ bool AgendaService::createMeeting(const std::string userName,
                                   const std::vector<std::string> participator) {
     Date start_date = Date::stringToDate(startDate);
     Date end_date = Date::stringToDate(endDate);
-    if (!Date::isValid(start_date) || !Date::isValid(end_date)) return false;
+    if (!Date::isValid(start_date) || !Date::isValid(end_date) || start_date >= end_date) return false;
     auto meetings = m_storage->queryMeeting(
         [start_date, end_date, title](const Meeting& meeting) {
             return !(start_date >= meeting.getEndDate() ||
@@ -60,6 +59,18 @@ bool AgendaService::createMeeting(const std::string userName,
                    title == meeting.getTitle();
         });
     if (meetings.size() > 0) return false;
+
+    auto users = m_storage->queryUser(
+        [userName](const User& user) -> bool { return user.getName() == userName; });
+    if (users.empty()) return false;
+
+    for (auto name : participator) {
+        auto users = m_storage->queryUser([name](const User& user) -> bool {
+            return user.getName() == name;
+        });
+        if (users.empty()) return false;
+    }
+
     m_storage->createMeeting(
         Meeting(userName, participator, start_date, end_date, title));
     return true;
@@ -89,9 +100,10 @@ std::list<Meeting> AgendaService::meetingQuery(
 
 std::list<Meeting> AgendaService::listAllSponsorMeetings(
     const std::string userName) const {
-    return m_storage->queryMeeting([userName](const Meeting& meeting) {
-        return userName == meeting.getSponsor();
-    });
+    return std::move(
+        m_storage->queryMeeting([userName](const Meeting& meeting) {
+            return userName == meeting.getSponsor();
+        }));
 }
 
 std::list<Meeting> AgendaService::listAllParticipateMeetings(
@@ -105,12 +117,13 @@ std::list<Meeting> AgendaService::listAllParticipateMeetings(
 
 std::list<Meeting> AgendaService::listAllMeetings(
     const std::string userName) const {
-    return m_storage->queryMeeting([userName](const Meeting& meeting) {
-        auto participators = meeting.getParticipator();
-        return userName == meeting.getSponsor() ||
-               std::find(participators.begin(), participators.end(),
-                         userName) != participators.end();
-    });
+    return std::move(
+        m_storage->queryMeeting([userName](const Meeting& meeting) {
+            auto participators = meeting.getParticipator();
+            return userName == meeting.getSponsor() ||
+                   std::find(participators.begin(), participators.end(),
+                             userName) != participators.end();
+        }));
 }
 
 bool AgendaService::deleteMeeting(const std::string userName,
@@ -129,3 +142,7 @@ bool AgendaService::deleteAllMeetings(const std::string userName) {
         });
     return count >= 1;
 }
+
+void AgendaService::startAgenda() { m_storage = Storage::getInstance(); }
+
+void AgendaService::quitAgenda() { m_storage->sync(); }

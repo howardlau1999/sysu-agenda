@@ -1,7 +1,14 @@
 #include "Date.hpp"
 
-const char* Date::default_date = "0000-00-00/00:00";
-const char* Date::date_format = "%04d-%02d-%02d/%02d:%02d";
+const char *Date::default_date = "0000-00-00/00:00";
+const char *Date::date_format = "%04d-%02d-%02d/%02d:%02d";
+
+Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
+    : m_year(t_year),
+      m_month(t_month),
+      m_day(t_day),
+      m_hour(t_hour),
+      m_minute(t_minute){};
 
 int Date::getYear() const { return m_year; }
 

@@ -14,12 +14,7 @@ class Date {
     /**
      * @brief constructor with arguments
      */
-    Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
-        : m_year(t_year),
-          m_month(t_month),
-          m_day(t_day),
-          m_hour(t_hour),
-          m_minute(t_minute){};
+    Date(int t_year, int t_month, int t_day, int t_hour, int t_minute);
 
     /**
      * @brief constructor with a string
