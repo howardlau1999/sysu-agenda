@@ -18,7 +18,7 @@ bool AgendaService::userRegister(const std::string userName,
                                  const std::string email,
                                  const std::string phone) {
     auto users = m_storage->queryUser(
-        [userName](const User& user) -> bool { user.getName() == userName; });
+        [userName](const User& user) -> bool { return user.getName() == userName; });
     if (!users.empty()) return false;
     m_storage->createUser(User(userName, password, email, phone));
     return true;
