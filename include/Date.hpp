@@ -135,7 +135,6 @@ class Date {
     int m_day;
     int m_hour;
     int m_minute;
-    static const char *date_format, *default_date;
 };
 
 

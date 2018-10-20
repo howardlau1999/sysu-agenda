@@ -98,6 +98,7 @@ std::string Date::dateToString(Date t_date) {
 }
 
 Date Date::stringToDate(std::string t_dateString) {
+    if (t_dateString.size() != 16) return Date();
     Date t_date;
     if (5 == sscanf(t_dateString.c_str(), date_format, &t_date.m_year,
                     &t_date.m_month, &t_date.m_day, &t_date.m_hour,
