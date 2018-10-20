@@ -93,7 +93,7 @@ bool Date::isValid(const Date& t_date) {
         if (t_date.m_day > 29) return false;
     } else if (t_date.m_day > days[t_date.m_month - 1]) return false;
     if (t_date.m_hour < 0 || t_date.m_hour > 23) return false;
-    if (t_date.m_minute < 0 || t_date.m_hour > 59) return false;
+    if (t_date.m_minute < 0 || t_date.m_minute > 59) return false;
 
     return true;
 }
