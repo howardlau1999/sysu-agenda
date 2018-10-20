@@ -10,6 +10,10 @@ Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
       m_hour(t_hour),
       m_minute(t_minute){};
 
+Date::Date(std::string dateString) {
+    *this = stringToDate(dateString);
+}
+
 int Date::getYear() const { return m_year; }
 
 void Date::setYear(int t_year) { m_year = t_year; }
