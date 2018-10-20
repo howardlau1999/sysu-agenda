@@ -38,12 +38,12 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
     int count = 0;
     auto iter = m_userList.begin();
     auto end = m_userList.end();
-    if (!m_userList.empty())
-        while ((iter = std::find_if(iter, end, filter)) != end) {
+    for (auto& user : m_userList) {
+        if (filter(user)) {
             ++count;
-            switcher(*iter);
-            ++iter;
+            switcher(user);
         }
+    }
     m_dirty = true;
     return count;
 }
@@ -51,7 +51,9 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
 int Storage::deleteUser(std::function<bool(const User &)> filter) {
     int old_size = m_userList.size();
     if (!m_userList.empty())
-        m_userList.erase(std::remove_if(m_userList.begin(), m_userList.end(), filter), m_userList.end());
+        m_userList.erase(
+            std::remove_if(m_userList.begin(), m_userList.end(), filter),
+            m_userList.end());
     m_dirty = true;
     return old_size - m_userList.size();
 }
@@ -73,14 +75,12 @@ std::list<Meeting> Storage::queryMeeting(
 int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
                            std::function<void(Meeting &)> switcher) {
     int count = 0;
-    auto iter = m_meetingList.begin();
-    auto end = m_meetingList.end();
-    if (!m_meetingList.empty())
-        while ((iter = std::find_if(iter, end, filter)) != end) {
+    for (auto& meeting : m_meetingList) {
+        if (filter(meeting)) {
             ++count;
-            switcher(*iter);
-            ++iter;
+            switcher(meeting);
         }
+    }
     m_dirty = true;
     return count;
 }
@@ -88,7 +88,9 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
 int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
     int old_size = m_meetingList.size();
     if (!m_meetingList.empty())
-        m_meetingList.erase(std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter), m_meetingList.end());
+        m_meetingList.erase(
+            std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter),
+            m_meetingList.end());
     m_dirty = true;
     return old_size - m_meetingList.size();
 }
@@ -124,8 +126,10 @@ bool Storage::writeToFile() {
             participators_list += csv_value(participators[i]);
         }
         meeting_file << '"' << csv_value(participators_list) << '"' << ',';
-        meeting_file << '"' << Date::dateToString(meeting.getStartDate()) << '"' << ",";
-        meeting_file << '"' << Date::dateToString(meeting.getEndDate()) << '"' << ",";
+        meeting_file << '"' << Date::dateToString(meeting.getStartDate()) << '"'
+                     << ",";
+        meeting_file << '"' << Date::dateToString(meeting.getEndDate()) << '"'
+                     << ",";
         meeting_file << '"' << csv_value(meeting.getTitle()) << '"'
                      << std::endl;
     }
@@ -134,19 +138,19 @@ bool Storage::writeToFile() {
 }
 
 std::vector<std::string> parse_participators(std::string s) {
-	std::vector<std::string> participators;
-	std::string participator;
-	for (auto ch : s) {
-		if (ch == '&') {
-			participators.push_back(participator);
-			participator.clear();
-		} else {
-			participator += ch;
-		}
-	}
-	participators.push_back(participator);
-	participator.clear();
-	return participators;
+    std::vector<std::string> participators;
+    std::string participator;
+    for (auto ch : s) {
+        if (ch == '&') {
+            participators.push_back(participator);
+            participator.clear();
+        } else {
+            participator += ch;
+        }
+    }
+    participators.push_back(participator);
+    participator.clear();
+    return participators;
 }
 
 std::list<std::list<std::string>> parse_csv(std::istream &file) {
