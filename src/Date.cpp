@@ -3,6 +3,8 @@
 const char *default_date = "0000-00-00/00:00";
 const char *date_format = "%04d-%02d-%02d/%02d:%02d";
 
+Date::Date() {}
+
 Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
     : m_year(t_year),
       m_month(t_month),
@@ -10,29 +12,29 @@ Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
       m_hour(t_hour),
       m_minute(t_minute){};
 
-Date::Date(std::string dateString) {
+Date::Date(const std::string& dateString) {
     *this = stringToDate(dateString);
 }
 
 int Date::getYear() const { return m_year; }
 
-void Date::setYear(int t_year) { m_year = t_year; }
+void Date::setYear(const int t_year) { m_year = t_year; }
 
 int Date::getMonth() const { return m_month; }
 
-void Date::setMonth(int t_month) { m_month = t_month; }
+void Date::setMonth(const int t_month) { m_month = t_month; }
 
 int Date::getDay() const { return m_day; }
 
-void Date::setDay(int t_day) { m_day = t_day; }
+void Date::setDay(const int t_day) { m_day = t_day; }
 
 int Date::getHour() const { return m_hour; }
 
-void Date::setHour(int t_hour) { m_hour = t_hour; }
+void Date::setHour(const int t_hour) { m_hour = t_hour; }
 
 int Date::getMinute() const { return m_minute; }
 
-void Date::setMinute(int t_minute) { m_minute = t_minute; }
+void Date::setMinute(const int t_minute) { m_minute = t_minute; }
 
 Date &Date::operator=(const Date &t_date) {
     m_year = t_date.m_year;
@@ -76,9 +78,9 @@ bool Date::operator>=(const Date &t_date) const { return !(*this < t_date); }
 
 bool Date::operator<=(const Date &t_date) const { return !(*this > t_date); }
 
-bool Date::isValid(const Date t_date) {
+bool Date::isValid(const Date& t_date) {
     static const int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (t_date.m_year < 0 || t_date.m_year > 9999) return false;
+    if (t_date.m_year < 1000 || t_date.m_year > 9999) return false;
     if (t_date.m_month < 1 || t_date.m_month > 12) return false;
     if (t_date.m_day < 1) return false;
     if (t_date.m_month == 2 &&
@@ -93,7 +95,7 @@ bool Date::isValid(const Date t_date) {
     return true;
 }
 
-std::string Date::dateToString(Date t_date) {
+std::string Date::dateToString(const Date &t_date) {
     if (!Date::isValid(t_date)) return default_date;
     char date_string[17];
     sprintf(date_string, date_format, t_date.m_year, t_date.m_month,
@@ -101,7 +103,7 @@ std::string Date::dateToString(Date t_date) {
     return date_string;
 }
 
-Date Date::stringToDate(std::string t_dateString) {
+Date Date::stringToDate(const std::string& t_dateString) {
     if (t_dateString.size() != 16) return Date();
     Date t_date;
     if (5 == sscanf(t_dateString.c_str(), date_format, &t_date.m_year,
