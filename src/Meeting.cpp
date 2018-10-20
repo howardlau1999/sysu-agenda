@@ -1,8 +1,8 @@
 #include "Meeting.hpp"
 #include <algorithm>
-Meeting::Meeting(std::string t_sponsor,
-                 std::vector<std::string> t_participators, Date t_startTime,
-                 Date t_endTime, std::string t_title)
+Meeting::Meeting(const std::string&  t_sponsor,
+                 const std::vector<std::string>& t_participators, const Date& t_startTime,
+                 const Date& t_endTime, const std::string& t_title)
     : m_sponsor(t_sponsor),
       m_participators(t_participators),
       m_startDate(t_startTime),
@@ -34,7 +34,7 @@ void Meeting::addParticipator(const std::string &t_participator) {
 };
 
 void Meeting::removeParticipator(const std::string &t_participator) {
-	m_participators.erase(std::remove_if(m_participators.begin(), m_participators.end(), t_participator), m_participators.end());
+	  m_participators.erase(std::remove(m_participators.begin(), m_participators.end(), t_participator), m_participators.end());
 };
 
 Date Meeting::getStartDate() const { return m_startDate; }

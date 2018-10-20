@@ -80,7 +80,7 @@ bool Date::operator<=(const Date &t_date) const { return !(*this > t_date); }
 
 bool Date::isValid(const Date& t_date) {
     static const int days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (t_date.m_year < 0 || t_date.m_year > 9999) return false;
+    if (t_date.m_year < 1000 || t_date.m_year > 9999) return false;
     if (t_date.m_month < 1 || t_date.m_month > 12) return false;
     if (t_date.m_day < 1) return false;
     if (t_date.m_month == 2 &&
