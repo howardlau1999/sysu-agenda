@@ -5,7 +5,7 @@ SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
 ASIO_DIR := /home/howard/asio-1.12.1/include
-GTEST_DIR := ./gtest
+GTEST_DIR := ./gtest-1.6.0
 INCLUDE := -I./$(INC_DIR) -I$(ASIO_DIR) -I$(GTEST_DIR)/include
 TEST_LIBRARY := -L$(GTEST_DIR)/lib -lgtest -lgtest_main
 $(BIN_DIR)/main: $(BUILD_DIR)/Date.o $(BUILD_DIR)/AgendaService.o $(BUILD_DIR)/AgendaUI.o $(BUILD_DIR)/User.o $(BUILD_DIR)/Meeting.o $(BUILD_DIR)/Storage.o $(BUILD_DIR)/main.o
