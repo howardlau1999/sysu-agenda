@@ -42,6 +42,7 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
         while ((iter = std::find_if(iter, end, filter)) != end) {
             ++count;
             switcher(*iter);
+            ++iter;
         }
     m_dirty = true;
     return count;
@@ -78,6 +79,7 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
         while ((iter = std::find_if(iter, end, filter)) != end) {
             ++count;
             switcher(*iter);
+            ++iter;
         }
     m_dirty = true;
     return count;
@@ -118,19 +120,33 @@ bool Storage::writeToFile() {
         auto participators = meeting.getParticipator();
         std::string participators_list = "";
         for (int i = 0; i < participators.size(); ++i) {
-            if (i) participators_list += ",";
-            participators_list += '"';
+            if (i) participators_list += "&";
             participators_list += csv_value(participators[i]);
-            participators_list += '"';
         }
         meeting_file << '"' << csv_value(participators_list) << '"' << ',';
-        meeting_file << Date::dateToString(meeting.getStartDate()) << ",";
-        meeting_file << Date::dateToString(meeting.getEndDate()) << ",";
+        meeting_file << '"' << Date::dateToString(meeting.getStartDate()) << '"' << ",";
+        meeting_file << '"' << Date::dateToString(meeting.getEndDate()) << '"' << ",";
         meeting_file << '"' << csv_value(meeting.getTitle()) << '"'
                      << std::endl;
     }
 
     return true;
+}
+
+std::vector<std::string> parse_participators(std::string s) {
+	std::vector<std::string> participators;
+	std::string participator;
+	for (auto ch : s) {
+		if (ch == '&') {
+			participators.push_back(participator);
+			participator.clear();
+		} else {
+			participator += ch;
+		}
+	}
+	participators.push_back(participator);
+	participator.clear();
+	return participators;
 }
 
 std::list<std::list<std::string>> parse_csv(std::istream &file) {
@@ -198,11 +214,7 @@ bool Storage::readFromFile() {
     for (auto meeting : meetings) {
         auto sponsor = meeting.front();
         meeting.pop_front();
-        auto participators_stream = std::stringstream(meeting.front());
-        auto participators_list = parse_csv(participators_stream).front();
-        std::vector<std::string> participators;
-        participators.assign(participators_list.begin(),
-                             participators_list.end());
+        auto participators = parse_participators(meeting.front());
         meeting.pop_front();
         auto start_date = Date::stringToDate(meeting.front());
         meeting.pop_front();
