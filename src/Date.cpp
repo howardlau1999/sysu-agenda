@@ -3,7 +3,11 @@
 const char *default_date = "0000-00-00/00:00";
 const char *date_format = "%04d-%02d-%02d/%02d:%02d";
 
-Date::Date() {}
+Date::Date() : m_year(0),
+      m_month(0),
+      m_day(0),
+      m_hour(0),
+      m_minute(0){}
 
 Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
     : m_year(t_year),
@@ -84,11 +88,10 @@ bool Date::isValid(const Date& t_date) {
     if (t_date.m_month < 1 || t_date.m_month > 12) return false;
     if (t_date.m_day < 1) return false;
     if (t_date.m_month == 2 &&
-        (t_date.m_year % 4 == 0 && t_date.m_year % 100 != 0 ||
+        ((t_date.m_year % 4 == 0 && t_date.m_year % 100 != 0) ||
          t_date.m_year % 400 == 0)) {
-        if (t_date.m_month > 29) return false;
-    }
-    if (t_date.m_month > days[t_date.m_month - 1]) return false;
+        if (t_date.m_day > 29) return false;
+    } else if (t_date.m_day > days[t_date.m_month - 1]) return false;
     if (t_date.m_hour < 0 || t_date.m_hour > 23) return false;
     if (t_date.m_minute < 0 || t_date.m_hour > 59) return false;
 
