@@ -18,13 +18,13 @@ static PyObject* user_login(PyObject* self, PyObject* args) {
     return ret;
 }
 
-static PyObject* user_register(PyObject* self, PyObject* args) {
+static PyObject* user_register(PyObject* self, PyObject* args, PyObject* kwargs) {
     char* username;
     char* password;
     char* email;
     char* phone;
-
-    if (!PyArg_ParseTuple(args, "ssss", &username, &password, &email, &phone)) {
+    char* keywords[] = {"username", "password", "email", "phone", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssss", keywords, &username, &password, &email, &phone)) {
         return NULL;
     }
 
@@ -51,14 +51,16 @@ static PyObject* delete_user(PyObject* self, PyObject* args) {
     return ret;
 }
 
-static PyObject* create_meeting(PyObject* self, PyObject* args) {
+static PyObject* create_meeting(PyObject* self, PyObject* args, PyObject* kwargs) {
     char* username;
     char* title;
     char* start_date;
     char* end_date;
     PyObject* participators;
 
-    if (!PyArg_ParseTuple(args, "ssssO!", &username, &title, &start_date,
+    char* keywords[] = {"username", "title", "start_date", "end_date", "participators", NULL};
+ 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssssO!", keywords, &username, &title, &start_date,
                           &end_date, &PyList_Type, &participators)) {
         return NULL;
     }
@@ -232,10 +234,10 @@ static PyObject* list_participate_meetings(PyObject* self, PyObject* args) {
 
 static PyMethodDef PyAgendaMethods[] = {
     {"login", user_login, METH_VARARGS, "Log in Agenda"},
-    {"register", user_register, METH_VARARGS, "Register a new account"},
+    {"register", (PyCFunction) user_register, METH_VARARGS | METH_KEYWORDS, "Register a new account"},
     {"delete_user", delete_user, METH_VARARGS, "Delete an existing user"},
     {"list_all_users", list_all_users, METH_VARARGS, "List all users"},
-    {"create_meeting", create_meeting, METH_VARARGS, "Create a new meeting"},
+    {"create_meeting", (PyCFunction) create_meeting, METH_VARARGS | METH_KEYWORDS, "Create a new meeting"},
     {"delete_meeting", delete_meeting, METH_VARARGS, "Delete meeting"},
     {"delete_all_meetings", delete_all_meetings, METH_VARARGS,
      "Delete all meetings"},

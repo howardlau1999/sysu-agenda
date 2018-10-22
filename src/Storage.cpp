@@ -44,7 +44,7 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
             switcher(user);
         }
     }
-    m_dirty = true;
+    sync();
     return count;
 }
 
@@ -54,13 +54,13 @@ int Storage::deleteUser(std::function<bool(const User &)> filter) {
         m_userList.erase(
             std::remove_if(m_userList.begin(), m_userList.end(), filter),
             m_userList.end());
-    m_dirty = true;
+    sync();
     return old_size - m_userList.size();
 }
 
 void Storage::createMeeting(const Meeting &t_meeting) {
     m_meetingList.push_back(t_meeting);
-    m_dirty = true;
+    sync();
 }
 
 std::list<Meeting> Storage::queryMeeting(
@@ -81,7 +81,7 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
             switcher(meeting);
         }
     }
-    m_dirty = true;
+    sync();
     return count;
 }
 
@@ -91,7 +91,7 @@ int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
         m_meetingList.erase(
             std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter),
             m_meetingList.end());
-    m_dirty = true;
+    sync();
     return old_size - m_meetingList.size();
 }
 

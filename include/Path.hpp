@@ -14,8 +14,8 @@ public:
     static const char *meetingPath;
 };
 
-const char *Path::meetingPath = "data/meetings.csv";
-const char *Path::userPath = "data/users.csv";
+const char *Path::meetingPath = "/home/howard/Agenda/data/meetings.csv";
+const char *Path::userPath = "/home/howard/Agenda/data/users.csv";
 
 
 #endif
