@@ -18,6 +18,20 @@ static PyObject* user_login(PyObject* self, PyObject* args) {
     return ret;
 }
 
+static PyObject* add(PyObject* self, PyObject* args) {
+    int a, b;
+
+    if (!PyArg_ParseTuple(args, "ii", &a, &a)) {
+        return NULL;
+    }
+
+    int sum = a + b;
+    PyObject* ret = Py_BuildValue("i", sum);
+
+    return ret;
+}
+
+
 static PyObject* user_register(PyObject* self, PyObject* args, PyObject* kwargs) {
     char* username;
     char* password;

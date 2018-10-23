@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from webagenda import views
+from rest_framework_jwt.views import obtain_jwt_token
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/login', views.user_login),
@@ -29,5 +31,6 @@ urlpatterns = [
     path('api/v1/list/meetings/sponsor', views.list_sponsor_meetings),
     path('api/v1/list/meetings/participate', views.list_participate_meetings),
     path('api/v1/meeting/<path:title>', views.query_meeting_by_title),
-    path('api/v1/meeting', views.query_meeting_by_date)
+    path('api/v1/meeting', views.query_meeting_by_date),
+    path('api/v1/token-auth', obtain_jwt_token),
 ]
