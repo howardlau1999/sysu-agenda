@@ -19,6 +19,7 @@ import AlertDialog from "./AlertDialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContent";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
 
 const styles = theme => ({
@@ -57,7 +58,14 @@ const styles = theme => ({
 class Login extends Component {
   state = {
     dialogShow: false,
-    redirectToReferrer: false
+    redirectToReferrer: false,
+    errorMessage: null
+  };
+
+  handleLoginBegin = () => {
+    this.setState({
+      errorMessage: null
+    });
   };
 
   handleLoginSuccess = user => {
@@ -66,6 +74,12 @@ class Login extends Component {
     console.log("Logged In");
     this.setState({
       redirectToReferrer: true
+    });
+  };
+
+  handleLoginFailure = err => {
+    this.setState({
+      errorMessage: "Your credentials are invalid."
     });
   };
 
@@ -110,15 +124,10 @@ class Login extends Component {
                       <MaterialUIForm
                         className={classes.form}
                         onSubmit={(values, pristineValues) => {
+                          this.handleLoginBegin();
                           post(values)
-                            .then(user => {
-                              if (user.token) {
-                                this.handleLoginSuccess(user);
-                              }
-                            })
-                            .catch(error => {
-                              this.handleDialogOpen();
-                            });
+                            .then(this.handleLoginSuccess)
+                            .catch(this.handleLoginFailure);
                         }}
                       >
                         <FormControl margin="normal" required fullWidth>
@@ -151,15 +160,21 @@ class Login extends Component {
                           }
                           label="Remember me"
                         />
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          color="primary"
-                          className={classes.submit}
-                        >
-                          Login
-                        </Button>
+                        {this.state.errorMessage ? (
+                          <FormHelperText error={true}>
+                            {this.state.errorMessage}
+                          </FormHelperText>
+                        ) : null}
+                        <FormControl fullWidth>
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                          >
+                            Login
+                          </Button>
+                        </FormControl>
                       </MaterialUIForm>
                     )}
                   </Mutate>
