@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -15,6 +15,12 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import MaterialUIForm from "react-material-ui-form";
 import JssProvider from "react-jss/lib/JssProvider";
 import { Get, Mutate } from "restful-react";
+import AlertDialog from "./AlertDialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContent";
+import { Redirect } from "react-router-dom";
+
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -48,85 +54,135 @@ const styles = theme => ({
   }
 });
 
-function Login(props) {
-  const { classes } = props;
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <main className={classes.layout}>
-        <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <JssProvider>
-            <Get lazy path="/token-auth">
-              {() => (
-                <Mutate verb="POST">
-                  {(post, { loading: isPosting }) => (
-                    <MaterialUIForm
-                      className={classes.form}
-                      onSubmit={(values, pristineValues) => {
-                        post(values)
-                          .then(user => {
-                            if (user.token){
-                                localStorage.setItem("user_token", user.token);
-                                console.log("Logged In");
-                            }
-                             
-                          })
-                          .catch(error => {
-                            alert(JSON.stringify(error.data));
-                          });
-                      }}
-                    >
-                      <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="username">Username</InputLabel>
-                        <Input
-                          id="username"
-                          name="username"
-                          autoComplete="username"
-                          autoFocus
-                          value=""
-                        />
-                      </FormControl>
-                      <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="password">Password</InputLabel>
-                        <Input
-                          name="password"
-                          type="password"
-                          id="password"
-                          autoComplete="current-password"
-                          value=""
-                        />
-                      </FormControl>
-                      <FormControlLabel
-                        control={
-                          <Checkbox name="remember" value="yes" color="primary" />
-                        }
-                        label="Remember me"
-                      />
-                      <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
+class Login extends Component {
+  state = {
+    dialogShow: false,
+    redirectToReferrer: false
+  };
+
+  handleLoginSuccess = user => {
+    localStorage.setItem("user_token", user.token);
+    localStorage.setItem("loggined", true);
+    console.log("Logged In");
+    this.setState({
+      redirectToReferrer: true
+    });
+  };
+
+  handleDialogClose = () => {
+    this.setState({
+      dialogShow: false
+    });
+  };
+
+  handleDialogOpen = () => {
+    this.setState({
+      dialogShow: true
+    });
+  };
+  render() {
+    const { classes } = this.props;
+    const { from } = this.props.location.state || {
+      from: { pathname: "/dashboard" }
+    };
+    const { redirectToReferrer } = this.state;
+
+    if (redirectToReferrer) {
+      return <Redirect to={from} />;
+    }
+
+    return (
+      <React.Fragment>
+        <CssBaseline />
+        <main className={classes.layout}>
+          <Paper className={classes.paper}>
+            <Avatar className={classes.avatar}>
+              <LockIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <JssProvider>
+              <Get lazy path="/token-auth">
+                {() => (
+                  <Mutate verb="POST">
+                    {(post, { loading: isPosting }) => (
+                      <MaterialUIForm
+                        className={classes.form}
+                        onSubmit={(values, pristineValues) => {
+                          post(values)
+                            .then(user => {
+                              if (user.token) {
+                                this.handleLoginSuccess(user);
+                              }
+                            })
+                            .catch(error => {
+                              this.handleDialogOpen();
+                            });
+                        }}
                       >
-                        Login
-                      </Button>
-                    </MaterialUIForm>
-                  )}
-                </Mutate>
-              )}
-            </Get>
-          </JssProvider>
-        </Paper>
-      </main>
-    </React.Fragment>
-  );
+                        <FormControl margin="normal" required fullWidth>
+                          <InputLabel htmlFor="username">Username</InputLabel>
+                          <Input
+                            id="username"
+                            name="username"
+                            autoComplete="username"
+                            autoFocus
+                            value=""
+                          />
+                        </FormControl>
+                        <FormControl margin="normal" required fullWidth>
+                          <InputLabel htmlFor="password">Password</InputLabel>
+                          <Input
+                            name="password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value=""
+                          />
+                        </FormControl>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              name="remember"
+                              value="yes"
+                              color="primary"
+                            />
+                          }
+                          label="Remember me"
+                        />
+                        <Button
+                          type="submit"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          className={classes.submit}
+                        >
+                          Login
+                        </Button>
+                      </MaterialUIForm>
+                    )}
+                  </Mutate>
+                )}
+              </Get>
+            </JssProvider>
+          </Paper>
+        </main>
+
+        <AlertDialog
+          open={this.state.dialogShow}
+          onClose={this.handleDialogClose}
+        >
+          <DialogTitle>Login Failed</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Your credentials are invalid, please check your input.
+            </DialogContentText>
+          </DialogContent>
+        </AlertDialog>
+      </React.Fragment>
+    );
+  }
 }
 
 Login.propTypes = {
