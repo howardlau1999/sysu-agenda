@@ -22,6 +22,7 @@ std::shared_ptr<Storage> Storage::getInstance() {
 void Storage::createUser(const User &t_user) {
     m_userList.push_back(t_user);
     m_dirty = true;
+    sync();
 }
 
 std::list<User> Storage::queryUser(

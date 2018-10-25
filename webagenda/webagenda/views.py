@@ -8,6 +8,8 @@ import pyagenda
 
 
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
 def user_login(request):
     user = request.data['user']
     user = authenticate(
@@ -22,6 +24,8 @@ def user_login(request):
 
 
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
 def user_register(request):
     user = request.data['user']
     success = pyagenda.register(**user)
@@ -35,24 +39,18 @@ def user_logout(request):
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def list_users(request):
     users = pyagenda.list_all_users()
     return Response({"success": True, "users": users})
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def query_meeting_by_title(request, title):
     meetings = pyagenda.query_meeting_by_title(request.user.username, title)
     return Response({"success": True, "meetings": meetings})
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def query_meeting_by_date(request):
     start_date = request.query_params['start_date']
     end_date = request.query_params['end_date']
@@ -62,24 +60,18 @@ def query_meeting_by_date(request):
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def list_sponsor_meetings(request):
     meetings = pyagenda.list_sponsor_meetings(request.user.username)
     return Response({"success": True, "meetings": meetings})
 
 
 @api_view(['GET'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def list_participate_meetings(request):
     meetings = pyagenda.list_participate_meetings(request.user.username)
     return Response({"success": True, "meetings": meetings})
 
 
 @api_view(['DELETE'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def delete_user(request):
     success = pyagenda.delete_user(request.user.username)
     logout(request)
@@ -87,24 +79,18 @@ def delete_user(request):
 
 
 @api_view(['DELETE'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def delete_all_meetings(request):
     success = pyagenda.delete_all_meetings(request.user.username)
     return Response({"success": success})
 
 
 @api_view(['DELETE'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def delete_meeting(request, title):
     success = pyagenda.delete_meeting(request.user.username, title)
     return Response({"success": success})
 
 
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def create_meeting(request):
     user = request.user
     username = user.username

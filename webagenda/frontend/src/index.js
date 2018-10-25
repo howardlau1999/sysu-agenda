@@ -4,10 +4,12 @@ import "./index.css";
 import Agenda from "./components/Agenda";
 import * as serviceWorker from "./serviceWorker";
 import { RestfulProvider } from "restful-react";
+
 ReactDOM.render(
-  <RestfulProvider base="http://127.0.0.1:8000/api/v1">
-    <Agenda />
-  </RestfulProvider>,
+  
+    <RestfulProvider base="http://127.0.0.1:8000/api/v1">
+      <Agenda />
+    </RestfulProvider>,
   document.getElementById("root")
 );
 
