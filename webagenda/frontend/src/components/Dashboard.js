@@ -20,6 +20,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import UsersTable from "./UsersTable";
 import MeetingsTable from "./MeetingsTable";
+import { Switch, Link, Route } from "react-router-dom";
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -148,7 +149,7 @@ class Dashboard extends Component {
                 Dashboard
               </Typography>
               <IconButton color="inherit">
-                <Badge badgeContent={4} color="secondary">
+                <Badge badgeContent={0} color="secondary">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -172,43 +173,61 @@ class Dashboard extends Component {
 
             <Divider />
             <List>
-              <ListItem button>
+              <ListItem button component={Link} to="/dashboard/meetings">
                 <ListItemIcon>
                   <AssignmentIcon />
                 </ListItemIcon>
                 <ListItemText primary="Meetings" />
               </ListItem>
-              <ListItem button>
-                <ListItemIcon>
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary="Users" />
+              <ListItem button component={Link} to="/dashboard/users">               
+                  <ListItemIcon>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Users" />
               </ListItem>
             </List>
           </Drawer>
-          <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
-            <Typography variant="h4" gutterBottom component="h2">
-              Users
-            </Typography>
-            <div className={classes.tableContainer}>
-              <UsersTable />
-            </div>
+          
+            <main className={classes.content}>
+            <Switch>
+              <Route
+                path="/dashboard/users"
+                component={() => (
+                  <div>
+                    <div className={classes.appBarSpacer} />
+                    <Typography variant="h4" gutterBottom component="h2">
+                      Users
+                    </Typography>
+                    <div className={classes.tableContainer}>
+                      <UsersTable />
+                    </div>
+                  </div>
+                )}
+              />
+              <Route
+                path="/dashboard/meetings"
+                component={() => (
+                  <div>
+                    <div className={classes.appBarSpacer} />
 
-            <Typography variant="h4" gutterBottom component="h2">
-              My Sponsored Meetings
-            </Typography>
-            <div className={classes.tableContainer}>
-              <MeetingsTable meetingsType="sponsor" />
-            </div>
+                    <Typography variant="h4" gutterBottom component="h2">
+                      My Sponsored Meetings
+                    </Typography>
+                    <div className={classes.tableContainer}>
+                      <MeetingsTable meetingsType="sponsor" />
+                    </div>
 
-            <Typography variant="h4" gutterBottom component="h2">
-              My Participated Meetings
-            </Typography>
-            <div className={classes.tableContainer}>
-              <MeetingsTable meetingsType="participate" />
-            </div>
-          </main>
+                    <Typography variant="h4" gutterBottom component="h2">
+                      My Participated Meetings
+                    </Typography>
+                    <div className={classes.tableContainer}>
+                      <MeetingsTable meetingsType="participate" />
+                    </div>
+                  </div>
+                )}
+              /></Switch>
+            </main>
+          
         </div>
       </React.Fragment>
     );
