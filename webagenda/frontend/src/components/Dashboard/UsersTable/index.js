@@ -7,7 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Get from "restful-react";
-import Chip from "@material-ui/core/Chip";
+
 const styles = {
   root: {
     width: "100%",
@@ -18,16 +18,15 @@ const styles = {
   }
 };
 
-class MeetingsTable extends React.Component {
+class UsersTable extends React.Component {
   render() {
     const { classes } = this.props;
-    const meetingsType = this.props.meetingsType;
     return (
       <Get
-        path={"/list/meetings/" + meetingsType}
+        path="/users"
         resolve={data => {
           console.log(data);
-          return data.meetings;
+          return data.users;
         }}
         requestOptions={() => ({
           headers: {
@@ -35,32 +34,22 @@ class MeetingsTable extends React.Component {
           }
         })}
       >
-        {meetings => (
+        {users => (
           <Paper className={classes.root}>
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Start Date</TableCell>
-                  <TableCell>End Date</TableCell>
-                  <TableCell>Sponsor</TableCell>
-                  <TableCell>Participators</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Phone</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(meetings || []).map(meeting => (
-                  <TableRow key={meeting.title}>
-                    <TableCell>{meeting.title}</TableCell>
-                    <TableCell>{meeting.start_date}</TableCell>
-                    <TableCell>{meeting.end_date}</TableCell>
-                    <TableCell>{meeting.sponsor}</TableCell>
-                    <TableCell>
-                      {meeting.participators
-                        ? meeting.participators.map(username => (
-                            <Chip label={username} key={username} />
-                          ))
-                        : null}
-                    </TableCell>
+                {(users || []).map(user => (
+                  <TableRow key={user.username}>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -72,4 +61,4 @@ class MeetingsTable extends React.Component {
   }
 }
 
-export default withStyles(styles)(MeetingsTable);
+export default withStyles(styles)(UsersTable);

@@ -13,13 +13,10 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import MaterialUIForm from "react-material-ui-form";
 import JssProvider from "react-jss/lib/JssProvider";
 import { Get, Mutate } from "restful-react";
-import AlertDialog from "./AlertDialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContent";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
-
+import { connect } from "react-redux";
+import { showSnackbarMessage } from "../redux/actions";
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -55,7 +52,6 @@ const styles = theme => ({
 
 class Register extends Component {
   state = {
-    dialogShow: false,
     redirectToReferrer: false,
     errorMessage: null
   };
@@ -68,16 +64,17 @@ class Register extends Component {
 
   handleRegisterResult = result => {
     if (result.success) {
-        this.props.showSnackMessage("Register success!");
-       this.setState({
+      this.props.showSnackbarMessage("Register success!");
+      this.setState({
         redirectToReferrer: true
-      }); 
-    }
-      
-    else
+      });
+    } else {
+      this.props.showSnackbarMessage("Register failed!");
       this.setState({
         errorMessage: "Register failed"
       });
+    }
+      
   };
 
   handleRegisterError = err => {
@@ -86,17 +83,6 @@ class Register extends Component {
     });
   };
 
-  handleDialogClose = () => {
-    this.setState({
-      dialogShow: false
-    });
-  };
-
-  handleDialogOpen = () => {
-    this.setState({
-      dialogShow: true
-    });
-  };
   render() {
     const { classes } = this.props;
     const { from } = this.props.location.state || {
@@ -196,18 +182,6 @@ class Register extends Component {
             </JssProvider>
           </Paper>
         </main>
-
-        <AlertDialog
-          open={this.state.dialogShow}
-          onClose={this.handleDialogClose}
-        >
-          <DialogTitle>Login Failed</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Your credentials are invalid, please check your input.
-            </DialogContentText>
-          </DialogContent>
-        </AlertDialog>
       </React.Fragment>
     );
   }
@@ -217,4 +191,7 @@ Register.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Register);
+export default connect(
+  null,
+  { showSnackbarMessage }
+)(withStyles(styles)(Register));

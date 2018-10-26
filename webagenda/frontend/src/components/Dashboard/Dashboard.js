@@ -31,6 +31,9 @@ const styles = theme => ({
   }
 });
 class Dashboard extends Component {
+  state = {
+    refresh: false
+  };
   render() {
     const { classes } = this.props;
     return (
@@ -63,10 +66,20 @@ class Dashboard extends Component {
 
                     <Typography variant="h4" gutterBottom component="h2">
                       My Sponsored Meetings
-                      <MeetingCreator />
+                      <MeetingCreator
+                        onSuccess={() => {
+                          this.setState({
+                            refresh: true
+                          });
+                        }}
+                      />
                     </Typography>
                     <div className={classes.tableContainer}>
-                      <MeetingsTable meetingsType="sponsor" />
+                      <MeetingsTable meetingsType="sponsor" onDelete={() => {
+                          this.setState({
+                            refresh: true
+                          });
+                        }} />
                     </div>
 
                     <Typography variant="h4" gutterBottom component="h2">

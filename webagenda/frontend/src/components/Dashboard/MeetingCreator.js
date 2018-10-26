@@ -24,6 +24,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 
 import IconButton from "@material-ui/core/IconButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { connect } from "react-redux";
+import { showSnackbarMessage } from "../../redux/actions";
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -156,7 +158,13 @@ function getSuggestionValue(suggestion) {
 class MeetingCreator extends Component {
   handleCreateBegin = () => {};
 
-  handleCreateSuccess = () => {};
+  handleCreateSuccess = result => {
+    if (result.success) {
+      this.handleMeetingCreatorClose();
+      this.props.onSuccess();
+      this.props.showSnackbarMessage("Create meeting successfully!");
+    } else this.props.showSnackbarMessage("Create meeting failed!");
+  };
 
   handleCreateError = err => {
     console.log(err);
@@ -254,14 +262,17 @@ class MeetingCreator extends Component {
         <IconButton onClick={this.handleMeetingCreatorOpen}>
           <AddCircleOutlineIcon />
         </IconButton>
-        <Dialog open={this.state.meetingCreatorOpen} onClose={this.handleMeetingCreatorClose}>
+        <Dialog
+          open={this.state.meetingCreatorOpen}
+          onClose={this.handleMeetingCreatorClose}
+        >
           <DialogTitle>Create Meeting</DialogTitle>
           <DialogContent>
             <MuiPickersUtilsProvider utils={LuxonUtils}>
               <CssBaseline />
 
               <Get
-                path="/list/users"
+                path="/users"
                 requestOptions={() => ({
                   headers: {
                     Authorization: "JWT " + localStorage.getItem("user_token")
@@ -397,4 +408,7 @@ class MeetingCreator extends Component {
   }
 }
 
-export default withStyles(styles)(MeetingCreator);
+export default connect(
+  null,
+  { showSnackbarMessage }
+)(withStyles(styles)(MeetingCreator));
