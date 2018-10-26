@@ -7,7 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Get from "restful-react";
-
+import Chip from "@material-ui/core/Chip";
 const styles = {
   root: {
     width: "100%",
@@ -54,7 +54,13 @@ class MeetingsTable extends React.Component {
                     <TableCell>{meeting.start_date}</TableCell>
                     <TableCell>{meeting.end_date}</TableCell>
                     <TableCell>{meeting.sponsor}</TableCell>
-                    <TableCell>{meeting.participators.join(" & ")}</TableCell>
+                    <TableCell>
+                      {meeting.participators
+                        ? meeting.participators.map(username => (
+                            <Chip label={username} key={username} />
+                          ))
+                        : null}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Login from "./Login";
 import Register from "./Register";
-import Dashboard from "./Dashboard";
-import MeetingCreator from "./MeetingCreator";
+import { Dashboard } from "./Dashboard";
 import { BrowserRouter, Route } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -41,8 +40,12 @@ class Agenda extends Component {
         <div className="Agenda">
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/login" component={Login} />
-          <Route path="/test" component={MeetingCreator} />
-          <Route path="/register" render={props => <Register {...props} showSnackMessage={this.showSnackMessage} />} />
+          <Route
+            path="/register"
+            render={props => (
+              <Register {...props} showSnackMessage={this.showSnackMessage} />
+            )}
+          />
           <Snackbar
             anchorOrigin={{
               vertical: "bottom",
