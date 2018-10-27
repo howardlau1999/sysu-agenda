@@ -118,6 +118,10 @@ REST_FRAMEWORK = {
     )
 }
 
+import datetime
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1)
+}
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 

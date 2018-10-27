@@ -21,7 +21,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContent";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
-
+import { showSnackbarMessage } from "../redux/actions";
+import { connect } from "react-redux";
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -71,7 +72,7 @@ class Login extends Component {
   handleLoginSuccess = user => {
     localStorage.setItem("user_token", user.token);
     localStorage.setItem("loggined", true);
-    console.log("Logged In");
+    this.props.showSnackbarMessage("Welcome back!");
     this.setState({
       redirectToReferrer: true
     });
@@ -204,4 +205,7 @@ Login.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Login);
+export default connect(
+  null,
+  { showSnackbarMessage }
+)(withStyles(styles)(Login));

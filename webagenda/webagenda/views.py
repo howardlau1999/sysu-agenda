@@ -72,7 +72,7 @@ def list_participate_meetings(request):
 
 
 @api_view(['DELETE'])
-def delete_user(request):
+def delete_user(request, username):
     success = pyagenda.delete_user(request.user.username)
     logout(request)
     return Response({"success": success})

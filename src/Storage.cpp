@@ -22,7 +22,6 @@ std::shared_ptr<Storage> Storage::getInstance() {
 void Storage::createUser(const User &t_user) {
     m_userList.push_back(t_user);
     m_dirty = true;
-    sync();
 }
 
 std::list<User> Storage::queryUser(
@@ -45,7 +44,7 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
             switcher(user);
         }
     }
-    sync();
+    m_dirty = true;
     return count;
 }
 
@@ -55,13 +54,13 @@ int Storage::deleteUser(std::function<bool(const User &)> filter) {
         m_userList.erase(
             std::remove_if(m_userList.begin(), m_userList.end(), filter),
             m_userList.end());
-    sync();
+    m_dirty = true;
     return old_size - m_userList.size();
 }
 
 void Storage::createMeeting(const Meeting &t_meeting) {
     m_meetingList.push_back(t_meeting);
-    sync();
+    m_dirty = true;
 }
 
 std::list<Meeting> Storage::queryMeeting(
@@ -82,7 +81,7 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
             switcher(meeting);
         }
     }
-    sync();
+    m_dirty = true;
     return count;
 }
 
@@ -92,7 +91,7 @@ int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
         m_meetingList.erase(
             std::remove_if(m_meetingList.begin(), m_meetingList.end(), filter),
             m_meetingList.end());
-    sync();
+    m_dirty = true;
     return old_size - m_meetingList.size();
 }
 
@@ -143,13 +142,15 @@ std::vector<std::string> parse_participators(std::string s) {
     std::string participator;
     for (auto ch : s) {
         if (ch == '&') {
-            participators.push_back(participator);
+            if (!participator.empty()) 
+				participators.push_back(participator);
             participator.clear();
         } else {
             participator += ch;
         }
     }
-    participators.push_back(participator);
+    if (!participator.empty()) 
+		participators.push_back(participator);
     participator.clear();
     return participators;
 }

@@ -4,7 +4,7 @@
 #include "AgendaService.hpp"
 #include <iostream>
 #include <string>
-#include <map>
+
 class AgendaUI {
    public:
     AgendaUI();
@@ -102,20 +102,10 @@ class AgendaUI {
      * show the meetings in the screen
      */
     void printMeetings(std::list<Meeting> t_meetings);
-
-    /**
-     * print the operation menu
-     */
-    void printMenu(void);
     // dates
-
     std::string m_userName;
     std::string m_userPassword;
     AgendaService m_agendaService;
-    typedef void(AgendaUI::*NoArgHandler)(void);
-    const static std::vector<std::string> valid_ops_not_logined;
-    const static std::vector<std::string> valid_ops_logined;
-    static std::map<std::string, NoArgHandler> no_arg_op_map;
 };
 
 #endif

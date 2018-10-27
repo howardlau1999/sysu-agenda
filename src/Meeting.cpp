@@ -1,3 +1,4 @@
+
 #include "Meeting.hpp"
 #include <algorithm>
 Meeting::Meeting(const std::string&  t_sponsor,
