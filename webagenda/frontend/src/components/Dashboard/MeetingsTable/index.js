@@ -7,9 +7,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { Get } from "restful-react";
-import Chip from "@material-ui/core/Chip";
 import MeetingDeleter from "./MeetingDeleter";
 import MeetingQuiter from "./MeetingQuiter";
+import MeetingParticipator from "./MeetingParticipator";
 const styles = {
   root: {
     width: "100%",
@@ -64,7 +64,12 @@ class MeetingsTable extends React.Component {
                     <TableCell>
                       {meeting.participators
                         ? meeting.participators.map(username => (
-                            <Chip label={username} key={username} />
+                            <MeetingParticipator
+                              username={username}
+                              title={meeting.title}
+                              onDelete={this.props.onDelete}
+                              allowDelete={meetingsType === "sponsor"}
+                            />
                           ))
                         : null}
                     </TableCell>
