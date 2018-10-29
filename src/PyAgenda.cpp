@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <signal.h>
 #include "AgendaService.hpp"
 extern "C" {
 static AgendaService m_agendaService;

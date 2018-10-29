@@ -38,7 +38,7 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
     int count = 0;
     auto iter = m_userList.begin();
     auto end = m_userList.end();
-    for (auto& user : m_userList) {
+    for (auto &user : m_userList) {
         if (filter(user)) {
             ++count;
             switcher(user);
@@ -75,7 +75,7 @@ std::list<Meeting> Storage::queryMeeting(
 int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
                            std::function<void(Meeting &)> switcher) {
     int count = 0;
-    for (auto& meeting : m_meetingList) {
+    for (auto &meeting : m_meetingList) {
         if (filter(meeting)) {
             ++count;
             switcher(meeting);
@@ -142,15 +142,13 @@ std::vector<std::string> parse_participators(std::string s) {
     std::string participator;
     for (auto ch : s) {
         if (ch == '&') {
-            if (!participator.empty()) 
-				participators.push_back(participator);
+            if (!participator.empty()) participators.push_back(participator);
             participator.clear();
         } else {
             participator += ch;
         }
     }
-    if (!participator.empty()) 
-		participators.push_back(participator);
+    if (!participator.empty()) participators.push_back(participator);
     participator.clear();
     return participators;
 }
