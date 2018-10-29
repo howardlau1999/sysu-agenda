@@ -18,27 +18,15 @@ static PyObject* user_login(PyObject* self, PyObject* args) {
     return ret;
 }
 
-static PyObject* add(PyObject* self, PyObject* args) {
-    int a, b;
-
-    if (!PyArg_ParseTuple(args, "ii", &a, &a)) {
-        return NULL;
-    }
-
-    int sum = a + b;
-    PyObject* ret = Py_BuildValue("i", sum);
-
-    return ret;
-}
-
-
-static PyObject* user_register(PyObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* user_register(PyObject* self, PyObject* args,
+                               PyObject* kwargs) {
     char* username;
     char* password;
     char* email;
     char* phone;
     char* keywords[] = {"username", "password", "email", "phone", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssss", keywords, &username, &password, &email, &phone)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssss", keywords, &username,
+                                     &password, &email, &phone)) {
         return NULL;
     }
 
@@ -65,17 +53,20 @@ static PyObject* delete_user(PyObject* self, PyObject* args) {
     return ret;
 }
 
-static PyObject* create_meeting(PyObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* create_meeting(PyObject* self, PyObject* args,
+                                PyObject* kwargs) {
     char* username;
     char* title;
     char* start_date;
     char* end_date;
     PyObject* participators;
 
-    char* keywords[] = {"username", "title", "start_date", "end_date", "participators", NULL};
- 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssssO!", keywords, &username, &title, &start_date,
-                          &end_date, &PyList_Type, &participators)) {
+    char* keywords[] = {"username", "title",         "start_date",
+                        "end_date", "participators", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssssO!", keywords,
+                                     &username, &title, &start_date, &end_date,
+                                     &PyList_Type, &participators)) {
         return NULL;
     }
 
@@ -184,10 +175,7 @@ static PyObject* users_to_list(std::list<User> users) {
     return ret;
 }
 
-
-
 static PyObject* list_all_users(PyObject* self, PyObject* args) {
-
     auto users = m_agendaService.listAllUsers();
     PyObject* ret = users_to_list(users);
 
@@ -246,12 +234,56 @@ static PyObject* list_participate_meetings(PyObject* self, PyObject* args) {
     return ret;
 }
 
+static PyObject* quit_meeting(PyObject* self, PyObject* args) {
+    char* username;
+    char* title;
+
+    if (!PyArg_ParseTuple(args, "ss", &username, &title)) {
+        return NULL;
+    }
+
+    bool result = m_agendaService.quitMeeting(username, title);
+    PyObject* ret = PyBool_FromLong(result);
+
+    return ret;
+}
+
+static PyObject* remove_participator(PyObject* self, PyObject* args) {
+    char* username;
+    char* title;
+    char* participator;
+
+    if (!PyArg_ParseTuple(args, "sss", &username, &title, &participator)) {
+        return NULL;
+    }
+    PyObject* ret = PyBool_FromLong(m_agendaService.removeMeetingParticipator(
+        username, title, participator));
+
+    return ret;
+}
+
+static PyObject* add_participator(PyObject* self, PyObject* args) {
+    char* username;
+    char* title;
+    char* participator;
+
+    if (!PyArg_ParseTuple(args, "sss", &username, &title, &participator)) {
+        return NULL;
+    }
+    PyObject* ret = PyBool_FromLong(
+        m_agendaService.addMeetingParticipator(username, title, participator));
+
+    return ret;
+}
+
 static PyMethodDef PyAgendaMethods[] = {
     {"login", user_login, METH_VARARGS, "Log in Agenda"},
-    {"register", (PyCFunction) user_register, METH_VARARGS | METH_KEYWORDS, "Register a new account"},
+    {"register", (PyCFunction)user_register, METH_VARARGS | METH_KEYWORDS,
+     "Register a new account"},
     {"delete_user", delete_user, METH_VARARGS, "Delete an existing user"},
     {"list_all_users", list_all_users, METH_VARARGS, "List all users"},
-    {"create_meeting", (PyCFunction) create_meeting, METH_VARARGS | METH_KEYWORDS, "Create a new meeting"},
+    {"create_meeting", (PyCFunction)create_meeting,
+     METH_VARARGS | METH_KEYWORDS, "Create a new meeting"},
     {"delete_meeting", delete_meeting, METH_VARARGS, "Delete meeting"},
     {"delete_all_meetings", delete_all_meetings, METH_VARARGS,
      "Delete all meetings"},
@@ -263,6 +295,11 @@ static PyMethodDef PyAgendaMethods[] = {
      "Query meetings by date"},
     {"query_meeting_by_title", query_meeting_by_title, METH_VARARGS,
      "Query meetings by title"},
+    {"quit_meeting", quit_meeting, METH_VARARGS, "Quit a meeting"},
+    {"remove_participator", remove_participator, METH_VARARGS,
+     "Remove a participator from a meeting"},
+    {"add_participator", add_participator, METH_VARARGS,
+     "Add a participator to a meeting"},
     {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef pyagendamodule = {PyModuleDef_HEAD_INIT, "pyagenda",

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LuxonUtils from "material-ui-pickers/utils/luxon-utils";
-import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
+import MuiPickersUtilsProvider from "material-ui-pickers/MuiPickersUtilsProvider";
 import MaterialUIForm from "react-material-ui-form";
 import JssProvider from "react-jss/lib/JssProvider";
 import { Get, Mutate } from "restful-react";
@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import withStyles from "@material-ui/core/styles/withStyles";
-import DateTimePickerInline from "_material-ui-pickers@1.0.0-rc.17@material-ui-pickers/DateTimePicker/DateTimePickerInline";
+import DateTimePickerInline from "material-ui-pickers/DateTimePicker/DateTimePickerInline";
 import { DateTime } from "luxon";
 import ChipInput from "material-ui-chip-input";
 import Autosuggest from "react-autosuggest";
@@ -70,6 +70,9 @@ const styles = theme => ({
     left: 0,
     right: 0,
     zIndex: 100
+  },
+  dialog:{
+    height: 500
   },
   suggestion: {
     zIndex: 100,
@@ -207,7 +210,7 @@ class MeetingCreator extends Component {
       ? []
       : this.userList.filter(suggestion => {
           const keep =
-            count < 5 &&
+            count < 3 &&
             suggestion.username.toLowerCase().slice(0, inputLength) ===
               inputValue;
 
@@ -265,6 +268,7 @@ class MeetingCreator extends Component {
         <Dialog
           open={this.state.meetingCreatorOpen}
           onClose={this.handleMeetingCreatorClose}
+          
         >
           <DialogTitle>Create Meeting</DialogTitle>
           <DialogContent>
@@ -328,6 +332,7 @@ class MeetingCreator extends Component {
                           </FormControl>
                           <FormControl margin="normal" required fullWidth>
                             <DateTimePickerInline
+                              required
                               label="Start Time"
                               value={this.state.startTime}
                               onChange={this.handleStartTimeChange}
@@ -337,6 +342,7 @@ class MeetingCreator extends Component {
                           </FormControl>
                           <FormControl margin="normal" required fullWidth>
                             <DateTimePickerInline
+                              required
                               label="End Time"
                               value={this.state.endTime}
                               onChange={this.handleEndTimeChange}

@@ -132,11 +132,11 @@ bool AgendaService::quitMeeting(const std::string &userName, const std::string &
     return title == m.getTitle() && 
            m.isParticipator(userName) && 
            m.getSponsor() != userName; // Find the meeting containing participator
-  }, [userName, this](Meeting& m) {
+  }, [userName](Meeting& m) {
     m.removeParticipator(userName);
   });
-
-  auto meetings = m_storage->queryMeeting([] (const Meeting&) { return true;});
+  
+  auto meetings = m_storage->queryMeeting([] (const Meeting&) { return true; });
 
   // Clean up
   for (auto m : meetings) {
@@ -144,7 +144,7 @@ bool AgendaService::quitMeeting(const std::string &userName, const std::string &
       deleteMeeting(m.getSponsor(), m.getTitle());
   }
 
-  return updated > 0;
+  return updated;
 }
 
 // Passed

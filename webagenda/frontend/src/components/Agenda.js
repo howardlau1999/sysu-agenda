@@ -18,6 +18,7 @@ class Agenda extends Component {
       <BrowserRouter>
         <div className="Agenda">
           <Route path="/dashboard" component={Dashboard} />
+          <Route exact path="/" component={Login} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           

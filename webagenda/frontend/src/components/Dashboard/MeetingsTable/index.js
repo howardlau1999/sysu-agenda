@@ -6,9 +6,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { Get} from "restful-react";
+import { Get } from "restful-react";
 import Chip from "@material-ui/core/Chip";
 import MeetingDeleter from "./MeetingDeleter";
+import MeetingQuiter from "./MeetingQuiter";
 const styles = {
   root: {
     width: "100%",
@@ -23,6 +24,7 @@ class MeetingsTable extends React.Component {
   state = {
     refresh: false
   };
+
   render() {
     const { classes } = this.props;
     const meetingsType = this.props.meetingsType;
@@ -36,9 +38,7 @@ class MeetingsTable extends React.Component {
               <TableCell>End Date</TableCell>
               <TableCell>Sponsor</TableCell>
               <TableCell>Participators</TableCell>
-              {meetingsType === "sponsor" ? (
-                <TableCell>Actions</TableCell>
-              ) : null}
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
 
@@ -68,11 +68,20 @@ class MeetingsTable extends React.Component {
                           ))
                         : null}
                     </TableCell>
-                    {meetingsType === "sponsor" ? (
-                      <TableCell>
-                        <MeetingDeleter meeting={meeting} onDelete={this.props.onDelete} />
-                      </TableCell>
-                    ) : null}
+
+                    <TableCell>
+                      {meetingsType === "sponsor" ? (
+                        <MeetingDeleter
+                          meeting={meeting}
+                          onDelete={this.props.onDelete}
+                        />
+                      ) : (
+                        <MeetingQuiter
+                          meeting={meeting}
+                          onDelete={this.props.onDelete}
+                        />
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               }

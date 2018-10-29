@@ -75,18 +75,22 @@ class Dashboard extends Component {
                       />
                     </Typography>
                     <div className={classes.tableContainer}>
-                      <MeetingsTable meetingsType="sponsor" onDelete={() => {
-                          this.setState({
-                            refresh: true
-                          });
-                        }} />
+                      <MeetingsTable meetingsType="sponsor" onDelete={()=>{
+                        this.setState({
+                          refresh: true
+                        })
+                      }} />
                     </div>
 
                     <Typography variant="h4" gutterBottom component="h2">
                       My Participated Meetings
                     </Typography>
                     <div className={classes.tableContainer}>
-                      <MeetingsTable meetingsType="participate" />
+                      <MeetingsTable meetingsType="participate" onDelete={()=>{
+                        this.setState({
+                          refresh: true
+                        })
+                      }} />
                     </div>
                   </div>
                 )}
