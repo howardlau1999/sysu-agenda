@@ -32,8 +32,8 @@ urlpatterns = [
     path('api/v1/meetings/participate', views.list_participate_meetings),
     path('api/v1/meetings/participate/<path:title>', views.quit_meeting),
     path('api/v1/meeting/<path:title>', views.query_meeting_by_title),
-    path('api/v1/meeting/remove_participator', views.remove_participator),
-    path('api/v1/meeting/add_participator', views.add_participator),
+    path('api/v1/meetings/sponsor/<path:title>/participator/<path:participator>', views.remove_participator),
+    path('api/v1/meetings/sponsor/<path:title>/participator/add', views.add_participator),
     path('api/v1/meeting', views.query_meeting_by_date),
     path('api/v1/token-auth', obtain_jwt_token)
 ]
