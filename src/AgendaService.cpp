@@ -1,14 +1,18 @@
 #include "AgendaService.hpp"
 #include <algorithm>
 #include "Logger.hpp"
-Logger classLogger("AgendaService::");
+static Logger classLogger("AgendaService::");
 // Confident
 bool AgendaService::deleteUser(const std::string &userName,
                                const std::string &password) {
+                                 Logger logger(classLogger, __func__);
     if (m_storage->deleteUser([userName, password](const User &user) -> bool {
             return user.getName() == userName && user.getPassword() == password;
-        }) != 1)
-        return false;
+        }) != 1) {
+          logger.warning("Delete user " + userName + " failed");
+          return false;
+        }
+        
 
     // Delete sponsored meeting
     deleteAllMeetings(userName);
@@ -24,20 +28,28 @@ bool AgendaService::deleteUser(const std::string &userName,
         quitMeeting(userName, m.getTitle());
     }
 
+    logger.info("User " + userName + " was deleted successfully");
     return true;
 }
 
 bool AgendaService::addMeetingParticipator(const std::string &userName,
                                            const std::string &title,
                                            const std::string &participator) {
-    if (userName == participator) return false;
+                                             Logger logger(classLogger, __func__);
+    if (userName == participator) {
+      logger.error("Sponsor " + userName + " is the same as the participator");
+      return false;
+    }
 
     if (m_storage
             ->queryUser([&](const User &user) -> bool {
                 return user.getName() == participator;
             })
-            .empty())
-        return false;
+            .empty()) {
+              logger.error("Sponsor " + userName + " does not exist");
+              return false;
+            }
+        
 
     return m_storage->updateMeeting(
         [&](const Meeting &update) {
@@ -159,9 +171,11 @@ bool AgendaService::userRegister(const std::string &userName,
             ->queryUser([userName](const User &user) -> bool {
                 return user.getName() == userName;
             })
-            .size() >= 1)
-        return false;
+            .size() >= 1) {
+              return false;
 
+            }
+        
     m_storage->createUser(User(userName, password, email, phone));
     return true;
 }
@@ -169,6 +183,7 @@ bool AgendaService::userRegister(const std::string &userName,
 // Passed
 bool AgendaService::quitMeeting(const std::string &userName,
                                 const std::string &title) {
+                                  Logger logger(classLogger, __func__);
     int updated = m_storage->updateMeeting(
         [title, userName](const Meeting &m) {
             return title == m.getTitle() && m.isParticipator(userName) &&
@@ -177,15 +192,13 @@ bool AgendaService::quitMeeting(const std::string &userName,
         },
         [userName](Meeting &m) { m.removeParticipator(userName); });
 
-    auto meetings =
-        m_storage->queryMeeting([](const Meeting &) { return true; });
-
-    // Clean up
-    for (auto m : meetings) {
-        if (m.getParticipator().empty())
-            deleteMeeting(m.getSponsor(), m.getTitle());
+    if (!updated) {
+      logger.warning("User " + userName + " failed to quit meeting " + title);
+      return false;
     }
 
+    m_storage->deleteMeeting([](const Meeting& m) { return m.getParticipator().empty(); });
+    logger.info("User " + userName + " quitted meeting " + title);
     return updated;
 }
 
@@ -239,8 +252,11 @@ bool AgendaService::createMeeting(
                         (m.getSponsor() == userName ||
                          m.isParticipator(userName));
              })
-             .empty())
-        return false;
+             .empty()) {
+               logger.warning("Sponsor " + userName + " is busy");
+               return false;
+             }
+        
 
     Meeting meeting(userName, {}, s, e, title);
 
@@ -270,13 +286,16 @@ bool AgendaService::createMeeting(
             
 
         // Duplications of participators
-        if (meeting.isParticipator(name) || name == userName) return false;
+        if (meeting.isParticipator(name) || name == userName) {
+          logger.warning("Participator " + name + "  is duplicated");
+          return false;
+        }
 
         meeting.addParticipator(name);
     }
 
     m_storage->createMeeting(meeting);
-
+    logger.info("Meeting " + title + " was created");
     return true;
 }
 

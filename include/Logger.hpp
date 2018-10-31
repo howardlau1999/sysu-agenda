@@ -6,12 +6,18 @@
 #include <list>
 #include <memory>
 #include <string>
-
+#include <ctime>
 class Appender {
    public:
     virtual Appender& operator<<(const std::string& msg) = 0;
 };
-
+std::string now( const char* format = "%c" )
+{
+    std::time_t t = std::time(0) ;
+    char cstr[128] ;
+    std::strftime( cstr, sizeof(cstr), format, std::localtime(&t) ) ;
+    return cstr ;
+}
 class FileAppender : public Appender {
    public:
     FileAppender(const std::string& filename) {
@@ -19,6 +25,7 @@ class FileAppender : public Appender {
     }
 
     virtual FileAppender& operator<<(const std::string& msg) {
+        
         out << msg;
         return *this;
     }
@@ -35,7 +42,7 @@ class FileAppender : public Appender {
 class StderrAppender : public Appender {
    public:
     virtual StderrAppender& operator<<(const std::string& msg) {
-        std::cerr << msg;
+        std::cerr  << msg;
         return *this;
     }
 };
@@ -49,25 +56,25 @@ class Logger {
         : funcname(logger.funcname + funcname), appenders(logger.appenders) {}
     void info(const std::string& msg) {
         for (auto appender : appenders) {
-            (*appender) << "[INFO] " << funcname << ": " << msg << "\n";
+            (*appender) << now("[%Y-%m-%d %T] ") << "[INFO] " << funcname << ": " << msg << "\n";
         }
     }
 
     void debug(const std::string& msg) {
         for (auto appender : appenders) {
-            (*appender) << "[DEBUG] " << funcname << ": " << msg << "\n";
+            (*appender) << now("[%Y-%m-%d %T] ") << "[DEBUG] " << funcname << ": " << msg << "\n";
         }
     }
 
     void warning(const std::string& msg) {
         for (auto appender : appenders) {
-            (*appender) << "[WARNING] " << funcname << ": " << msg << "\n";
+            (*appender) << now("[%Y-%m-%d %T] ") << "[WARNING] " << funcname << ": " << msg << "\n";
         }
     }
 
     void error(const std::string& msg) {
         for (auto appender : appenders) {
-            (*appender) << "[ERROR] " << funcname << ": " << msg << "\n";
+            (*appender) << now("[%Y-%m-%d %T] ") << "[ERROR] " << funcname << ": " << msg << "\n";
         }
     }
 
