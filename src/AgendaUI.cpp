@@ -9,7 +9,7 @@ std::map<std::string, AgendaUI::NoArgHandler> AgendaUI::no_arg_op_map{
     {"l", &AgendaUI::userLogIn},
     {"r", &AgendaUI::userRegister},
     {"o", &AgendaUI::userLogOut},
-    {"dc", &AgendaUI::listAllUsers},
+    {"dc", &AgendaUI::deleteUser},
     {"cm", &AgendaUI::createMeeting},
     {"lu", &AgendaUI::listAllUsers},
     {"la", &AgendaUI::listAllMeetings},
