@@ -27,13 +27,14 @@ urlpatterns = [
     path('api/v1/users', views.list_users),
     path('api/v1/users/<path:username>', views.delete_user),
     # path('api/v1/delete/all_meetings', views.delete_all_meetings),
-    path('api/v1/meetings/sponsor/<path:title>', views.delete_meeting),
+    path('api/v1/meetings/sponsor/remove_participator', views.remove_participator),
+    path('api/v1/meetings/sponsor/remove_meeting', views.delete_meeting),
     path('api/v1/meetings/sponsor', views.list_sponsor_meetings),
     path('api/v1/meetings/participate', views.list_participate_meetings),
     path('api/v1/meetings/participate/<path:title>', views.quit_meeting),
+    path('api/v1/meetings/query_meeting_by_date', views.query_meeting_by_date),
     path('api/v1/meeting/<path:title>', views.query_meeting_by_title),
-    path('api/v1/meetings/sponsor/<path:title>/participator/<path:participator>', views.remove_participator),
-    path('api/v1/meetings/sponsor/<path:title>/participator/add', views.add_participator),
+    path('api/v1/meetings/sponsor/add_participator', views.add_participator),
     path('api/v1/meeting', views.query_meeting_by_date),
     path('api/v1/token-auth', obtain_jwt_token)
 ]

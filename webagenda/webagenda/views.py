@@ -47,6 +47,8 @@ def list_users(request):
 @api_view(['GET'])
 def query_meeting_by_title(request, title):
     meetings = pyagenda.query_meeting_by_title(request.user.username, title)
+    for i in range(len(meetings)):
+        meetings[i]["is_sponsor"] = meetings[i]["sponsor"] == request.user.username
     return Response({"success": True, "meetings": meetings})
 
 
@@ -54,20 +56,27 @@ def query_meeting_by_title(request, title):
 def query_meeting_by_date(request):
     start_date = request.query_params['start_date']
     end_date = request.query_params['end_date']
+    print(start_date, end_date)
     meetings = pyagenda.query_meeting_by_date(
         request.user.username, start_date, end_date)
+    for i in range(len(meetings)):
+        meetings[i]["is_sponsor"] = meetings[i]["sponsor"] == request.user.username
     return Response({"success": True, "meetings": meetings})
 
 
 @api_view(['GET'])
 def list_sponsor_meetings(request):
     meetings = pyagenda.list_sponsor_meetings(request.user.username)
+    for i in range(len(meetings)):
+        meetings[i]["is_sponsor"] = meetings[i]["sponsor"] == request.user.username
     return Response({"success": True, "meetings": meetings})
 
 
 @api_view(['GET'])
 def list_participate_meetings(request):
     meetings = pyagenda.list_participate_meetings(request.user.username)
+    for i in range(len(meetings)):
+        meetings[i]["is_sponsor"] = meetings[i]["sponsor"] == request.user.username
     return Response({"success": True, "meetings": meetings})
 
 
@@ -84,8 +93,9 @@ def delete_all_meetings(request):
     return Response({"success": success})
 
 
-@api_view(['DELETE'])
-def delete_meeting(request, title):
+@api_view(['POST'])
+def delete_meeting(request):
+    title = request.data['title']
     success = pyagenda.delete_meeting(request.user.username, title)
     return Response({"success": success})
 
@@ -113,10 +123,10 @@ def add_participator(request, title):
     success = pyagenda.add_participator(username, title, participator)
     return Response({"success": success})
 
-@api_view(['DELETE'])
-def remove_participator(request, title, participator):
+@api_view(['POST'])
+def remove_participator(request):
     user = request.user
     username = user.username
-    print(title, participator)
+    title, participator = request.data['title'], request.data['participator']
     success = pyagenda.remove_participator(username, title, participator)
     return Response({"success": success})

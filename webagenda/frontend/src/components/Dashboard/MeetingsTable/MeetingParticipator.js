@@ -20,10 +20,10 @@ class MeetingParticipator extends Component {
   render() {
     const { username, title, allowDelete } = this.props;
     return (
-      <Get lazy path={"/" + title + "/participator"}>
+      <Get lazy path="/remove_participator">
         {() => (
           <Mutate
-            verb="DELETE"
+            verb="POST"
             requestOptions={() => ({
               headers: {
                 Authorization: "JWT " + localStorage.getItem("user_token")
@@ -35,7 +35,10 @@ class MeetingParticipator extends Component {
                 label={username}
                 key={username}
                 onDelete={allowDelete ? () => {
-                  post(username)
+                  post({
+                    participator: username,
+                    title: title
+                  })
                     .then(this.handleParticipatorDeleted)
                     .catch(this.handleDeleteError);
                 } : null}

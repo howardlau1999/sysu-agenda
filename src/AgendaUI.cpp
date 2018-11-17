@@ -4,12 +4,12 @@
 
 const std::vector<std::string> AgendaUI::valid_ops_not_logined{"l", "r", "q"};
 const std::vector<std::string> AgendaUI::valid_ops_logined{
-    "o", "dc", "lu", "cm", "la", "las", "lap", "qm", "qt", "dm", "da"};
+    "o", "dc", "lu", "cm", "la", "las", "lap", "qm", "qt", "dm", "da", "amp", "rmp", "rqm"};
 std::map<std::string, AgendaUI::NoArgHandler> AgendaUI::no_arg_op_map{
     {"l", &AgendaUI::userLogIn},
     {"r", &AgendaUI::userRegister},
     {"o", &AgendaUI::userLogOut},
-    {"dc", &AgendaUI::listAllUsers},
+    {"dc", &AgendaUI::deleteUser},
     {"cm", &AgendaUI::createMeeting},
     {"lu", &AgendaUI::listAllUsers},
     {"la", &AgendaUI::listAllMeetings},
@@ -19,6 +19,9 @@ std::map<std::string, AgendaUI::NoArgHandler> AgendaUI::no_arg_op_map{
     {"qt", &AgendaUI::queryMeetingByTimeInterval},
     {"dm", &AgendaUI::deleteMeetingByTitle},
     {"da", &AgendaUI::deleteAllMeetings},
+    {"amp", &AgendaUI::addMeetingParticipator},
+    {"rmp", &AgendaUI::removeMeetingParticipator},
+    {"rqm", &AgendaUI::quitMeeting},
 };
 
 void AgendaUI::printMenu() {
@@ -49,6 +52,9 @@ void AgendaUI::printMenu() {
         std::cout << "la  - list all meetings" << std::endl;
         std::cout << "las - list all sponsor meetings" << std::endl;
         std::cout << "lap - list all participate meetings" << std::endl;
+        std::cout << "amp - add a meeting participator" << std::endl;
+        std::cout << "rmp - remove a meeting participator" << std::endl;
+        std::cout << "rqm - quit meeting" << std::endl;
         std::cout << "qm  - query meeting by title" << std::endl;
         std::cout << "qt  - query meeting by time interval" << std::endl;
         std::cout << "dm  - delete meeting by title" << std::endl;
@@ -56,7 +62,7 @@ void AgendaUI::printMenu() {
         std::cout << "---------------------------------------------------------"
                      "-----------"
                   << std::endl;
-        std::cout << "Agenda@" << m_userName << " : # ";
+        std::cout << "Agenda@" << m_userName << " :~# ";
     }
 }
 
@@ -111,7 +117,7 @@ void AgendaUI::userLogIn(void) {
         m_userName = name;
         m_userPassword = password;
     } else {
-        std::cout << "[error] log in fail!" << std::endl;
+        std::cout << "[log in] log in fail!" << std::endl;
     }
 }
 
@@ -125,7 +131,7 @@ void AgendaUI::userRegister(void) {
     if (m_agendaService.userRegister(name, password, email, phone)) {
         std::cout << "[register] succeed!" << std::endl;
     } else {
-        std::cout << "[error] register fail!" << std::endl;
+        std::cout << "[register] register fail!" << std::endl;
     }
 }
 
@@ -180,7 +186,7 @@ void AgendaUI::createMeeting(void) {
                                       participators))
         std::cout << "[create meeting] succeed!" << std::endl;
     else
-        std::cout << "[error] create meeting fail!" << std::endl;
+        std::cout << "[create meeting] create meeting fail!" << std::endl;
 }
 
 void AgendaUI::listAllMeetings(void) {
@@ -203,7 +209,7 @@ void AgendaUI::listAllParticipateMeetings(void) {
 }
 
 void AgendaUI::queryMeetingByTitle(void) {
-    std::cout << "[query meeting] [title]:" << std::endl;
+    std::cout << "[query meeting] [title] " << std::endl;
     std::cout << "[query meeting] ";
     std::string title;
     std::cin >> title;
@@ -218,7 +224,7 @@ void AgendaUI::queryMeetingByTimeInterval(void) {
     std::string s, e;
     std::cin >> s >> e;
     std::list<Meeting> m = m_agendaService.meetingQuery(m_userName, s, e);
-    std::cout << "[query meetings]" << std::endl;
+    std::cout << "[query meetings] " << std::endl;
     printMeetings(m);
 }
 
@@ -229,9 +235,9 @@ void AgendaUI::deleteMeetingByTitle(void) {
     std::cin >> title;
 
     if (m_agendaService.deleteMeeting(m_userName, title))
-        std::cout << "[delete meeting by title] succed!" << std::endl;
+        std::cout << "[delete meeting] succed!" << std::endl;
     else
-        std::cout << "[error] delete meeting fail!" << std::endl;
+        std::cout << "[delete meeting] delete meeting fail!" << std::endl;
 }
 
 void AgendaUI::deleteAllMeetings(void) {
@@ -260,5 +266,43 @@ void AgendaUI::printMeetings(std::list<Meeting> meetings) {
                   << std::left << Date::dateToString(it->getStartDate())
                   << std::setw(20) << std::left
                   << Date::dateToString(it->getEndDate()) << std::endl;
+    }
+}
+
+void AgendaUI::quitMeeting(void) {
+    std::cout << "[quit meeting] [meeting title] " << std::endl;
+    std::cout << "[quit meeting] ";
+    std::string title;
+    std::cin >> title;
+    if (m_agendaService.quitMeeting(m_userName ,title)) {
+        std::cout << "[quit meeting] succeed!" << std::endl;
+    } else {
+        std::cout << "[quit meeting] error!" << std::endl;
+    }
+}
+
+void AgendaUI::addMeetingParticipator(void) {
+    std::string prompt = "[add meeting participator] ";
+    std::cout << prompt << "[meeting title] [participator username] " << std::endl;
+    std::cout << prompt;
+    std::string title, username;
+    std::cin >> title >> username;
+    if (m_agendaService.addMeetingParticipator(m_userName, title, username)) {
+        std::cout << prompt << "succeed!" << std::endl;
+    } else {
+        std::cout << prompt << "error!" << std::endl;
+    }
+}
+
+void AgendaUI::removeMeetingParticipator(void) {
+    std::string prompt = "[remove meeting participator] ";
+    std::cout << prompt << "[meeting title] [participator username] " << std::endl;
+    std::cout << prompt;
+    std::string title, username;
+    std::cin >> title >> username;
+    if (m_agendaService.removeMeetingParticipator(m_userName, title, username)) {
+        std::cout << prompt << "succeed!" << std::endl;
+    } else {
+        std::cout << prompt << "error!" << std::endl;
     }
 }
