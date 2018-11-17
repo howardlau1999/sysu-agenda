@@ -14,7 +14,7 @@ import MaterialUIForm from "react-material-ui-form";
 import JssProvider from "react-jss/lib/JssProvider";
 import { Get, Mutate } from "restful-react";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { showSnackbarMessage } from "../redux/actions";
 const styles = theme => ({
@@ -47,6 +47,18 @@ const styles = theme => ({
   },
   submit: {
     marginTop: theme.spacing.unit * 3
+  },
+  register: {
+    textAlign: "center",
+    textDecoration: "none",
+    marginTop: 20,
+    color: "#1a0dab",
+    "&:visited": {
+      color: "#1a0dab"
+    }
+  },
+  title: {
+    textAlign: "center"
   }
 });
 
@@ -98,6 +110,7 @@ class Register extends Component {
       <React.Fragment>
         <CssBaseline />
         <main className={classes.layout}>
+          <h1 className={classes.title}> Agenda </h1>
           <Paper className={classes.paper}>
             <Avatar className={classes.avatar}>
               <LockIcon />
@@ -173,6 +186,11 @@ class Register extends Component {
                           >
                             Register
                           </Button>
+                        </FormControl>
+                        <FormControl fullWidth>
+                          <Link className={classes.register} to="/login">
+                            Already have one? Login
+                          </Link>
                         </FormControl>
                       </MaterialUIForm>
                     )}

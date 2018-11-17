@@ -31,7 +31,7 @@ const styles = theme => ({
 });
 class Dashboard extends Component {
   state = {
-    refresh: false
+    loggined: localStorage.getItem("loggined")
   };
   render() {
     const { classes } = this.props;

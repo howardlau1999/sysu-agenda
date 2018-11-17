@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
@@ -48,8 +48,12 @@ const styles = theme=>( {
   }
 });
 class DashboardDrawer extends Component {
+  state = {
+    loggined: localStorage.getItem("loggined")
+  }
   render() {
     const {classes} = this.props;
+    if (!this.state.loggined) return (<Redirect to={"/login"} />);
     return (
       <Drawer
         variant="permanent"
@@ -87,7 +91,10 @@ class DashboardDrawer extends Component {
             </ListItemIcon>
             <ListItemText primary="Query meetings" />
           </ListItem>
-          <ListItem button component={Link} to="/login">
+          <ListItem button onClick={() => {
+            localStorage.clear();
+            this.setState({loggined: false});
+          }}>
             <ListItemIcon>
               <ExitToAppIcon />
             </ListItemIcon>
