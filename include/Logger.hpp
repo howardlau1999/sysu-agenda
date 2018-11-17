@@ -25,8 +25,8 @@ class FileAppender : public Appender {
     }
 
     virtual FileAppender& operator<<(const std::string& msg) {
-        
         out << msg;
+        out.flush();
         return *this;
     }
 
@@ -50,8 +50,8 @@ class StderrAppender : public Appender {
 class Logger {
    public:
     enum LEVEL { DEBUG, INFO, WARNING, ERROR };
-    Logger(const std::string& funcname = "")
-        : funcname(funcname), appenders({std::make_shared<StderrAppender>()}) {}
+    Logger(const std::string& funcname = "", const std::list<std::shared_ptr<Appender>> appenders = {})
+        : funcname(funcname), appenders(appenders) {}
     Logger(const Logger& logger, const std::string& funcname = "")
         : funcname(logger.funcname + funcname), appenders(logger.appenders) {}
     void info(const std::string& msg) {

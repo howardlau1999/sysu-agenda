@@ -8,10 +8,10 @@ class MeetingDeleter extends React.Component {
   render() {
     const { meeting } = this.props;
     return (
-      <Get lazy path="">
+      <Get lazy path="/remove_meeting">
         {() => (
           <Mutate
-            verb="DELETE"
+            verb="POST"
             requestOptions={() => ({
               headers: {
                 Authorization: "JWT " + localStorage.getItem("user_token")
@@ -21,7 +21,7 @@ class MeetingDeleter extends React.Component {
             {(del, { loading: isDeleteting }) => (
               <IconButton
                 onClick={() => {
-                  del(meeting.title)
+                  del({title: meeting.title})
                     .then(data => {
                       if (data.success) {
                         this.props.showSnackbarMessage(

@@ -1,18 +1,18 @@
 #include "AgendaService.hpp"
 #include <algorithm>
 #include "Logger.hpp"
-static Logger classLogger("AgendaService::");
+static Logger classLogger("AgendaService::",
+                          {std::make_shared<FileAppender>("/tmp/log.txt")});
 // Confident
 bool AgendaService::deleteUser(const std::string &userName,
                                const std::string &password) {
-                                 Logger logger(classLogger, __func__);
+    Logger logger(classLogger, __func__);
     if (m_storage->deleteUser([userName, password](const User &user) -> bool {
             return user.getName() == userName && user.getPassword() == password;
         }) != 1) {
-          logger.warning("Delete user " + userName + " failed");
-          return false;
-        }
-        
+        logger.warning("Delete user " + userName + " failed");
+        return false;
+    }
 
     // Delete sponsored meeting
     deleteAllMeetings(userName);
@@ -35,10 +35,11 @@ bool AgendaService::deleteUser(const std::string &userName,
 bool AgendaService::addMeetingParticipator(const std::string &userName,
                                            const std::string &title,
                                            const std::string &participator) {
-                                             Logger logger(classLogger, __func__);
+    Logger logger(classLogger, __func__);
     if (userName == participator) {
-      logger.error("Sponsor " + userName + " is the same as the participator");
-      return false;
+        logger.error("Sponsor " + userName +
+                     " is the same as the participator");
+        return false;
     }
 
     if (m_storage
@@ -46,10 +47,9 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
                 return user.getName() == participator;
             })
             .empty()) {
-              logger.error("Sponsor " + userName + " does not exist");
-              return false;
-            }
-        
+        logger.error("Sponsor " + userName + " does not exist");
+        return false;
+    }
 
     return m_storage->updateMeeting(
         [&](const Meeting &update) {
@@ -78,6 +78,7 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
 bool AgendaService::removeMeetingParticipator(const std::string &userName,
                                               const std::string &title,
                                               const std::string &participator) {
+    Logger logger(classLogger, __func__);
     if (m_storage
             ->queryMeeting([userName, title, participator](const Meeting &m) {
                 return userName == m.getSponsor() && title == m.getTitle() &&
@@ -91,6 +92,8 @@ bool AgendaService::removeMeetingParticipator(const std::string &userName,
 
 std::list<Meeting> AgendaService::meetingQuery(const std::string &userName,
                                                const std::string &title) const {
+    Logger logger(classLogger, __func__);
+    logger.info("Query meeting by title" + title);
     return m_storage->queryMeeting([&](const Meeting &m) {
         return (userName == m.getSponsor() || m.isParticipator(userName)) &&
                title == m.getTitle();
@@ -102,7 +105,8 @@ std::list<Meeting> AgendaService::meetingQuery(
     const std::string &endDate) const {
     Date s(startDate);
     Date e(endDate);
-
+    Logger logger(classLogger, __func__);
+    logger.info("Query info by date " + startDate + " to " + endDate);
     // Input is invalid
     if (!Date::isValid(s) || !Date::isValid(e) || s > e)
         return std::list<Meeting>();
@@ -115,6 +119,8 @@ std::list<Meeting> AgendaService::meetingQuery(
 
 std::list<Meeting> AgendaService::listAllMeetings(
     const std::string &userName) const {
+    Logger logger(classLogger, __func__);
+    logger.info("User: " + userName);
     return m_storage->queryMeeting([&](const Meeting &m) {
         return userName == m.getSponsor() || m.isParticipator(userName);
     });
@@ -122,24 +128,32 @@ std::list<Meeting> AgendaService::listAllMeetings(
 
 std::list<Meeting> AgendaService::listAllSponsorMeetings(
     const std::string &userName) const {
+    Logger logger(classLogger, __func__);
+    logger.info("User: " + userName);
     return m_storage->queryMeeting(
         [&](const Meeting &m) { return userName == m.getSponsor(); });
 }
 
 std::list<Meeting> AgendaService::listAllParticipateMeetings(
     const std::string &userName) const {
+    Logger logger(classLogger, __func__);
+    logger.info("User: " + userName);
     return m_storage->queryMeeting(
         [&](const Meeting &m) { return m.isParticipator(userName); });
 }
 
 bool AgendaService::deleteMeeting(const std::string &userName,
                                   const std::string &title) {
+    Logger logger(classLogger, __func__);
+    logger.info("User " + userName + " Try delete meeting " + title);
     return m_storage->deleteMeeting([userName, title](const Meeting &m) {
         return userName == m.getSponsor() && title == m.getTitle();
     });
 }
 
 bool AgendaService::deleteAllMeetings(const std::string &userName) {
+    Logger logger(classLogger, __func__);
+    logger.info("Delete all meetings by " + userName);
     return m_storage->deleteMeeting(
         [userName](const Meeting &m) { return userName == m.getSponsor(); });
 }
@@ -149,17 +163,17 @@ bool AgendaService::userLogIn(const std::string &userName,
                               const std::string &password) {
     Logger logger(classLogger, __func__);
     if (m_storage
-               ->queryUser([userName, password](const User &user) -> bool {
-                   return user.getName() == userName &&
-                          user.getPassword() == password;
-               })
-               .size() == 1) {
-                 logger.info("User " + userName + " logged in");
-                 return true;
-               } else {
-                 logger.warning("User " + userName + " logged in failed");
-                 return false;
-               }
+            ->queryUser([userName, password](const User &user) -> bool {
+                return user.getName() == userName &&
+                       user.getPassword() == password;
+            })
+            .size() == 1) {
+        logger.info("User " + userName + " logged in");
+        return true;
+    } else {
+        logger.warning("User " + userName + " logged in failed");
+        return false;
+    }
 }
 
 // Passed
@@ -167,23 +181,25 @@ bool AgendaService::userRegister(const std::string &userName,
                                  const std::string &password,
                                  const std::string &email,
                                  const std::string &phone) {
+    Logger logger(classLogger, __func__);
     if (m_storage
             ->queryUser([userName](const User &user) -> bool {
                 return user.getName() == userName;
             })
             .size() >= 1) {
-              return false;
+        logger.warning("User " + userName + " already exists");
+        return false;
+    }
 
-            }
-        
     m_storage->createUser(User(userName, password, email, phone));
+    logger.info(userName + " registered successfully");
     return true;
 }
 
 // Passed
 bool AgendaService::quitMeeting(const std::string &userName,
                                 const std::string &title) {
-                                  Logger logger(classLogger, __func__);
+    Logger logger(classLogger, __func__);
     int updated = m_storage->updateMeeting(
         [title, userName](const Meeting &m) {
             return title == m.getTitle() && m.isParticipator(userName) &&
@@ -193,11 +209,12 @@ bool AgendaService::quitMeeting(const std::string &userName,
         [userName](Meeting &m) { m.removeParticipator(userName); });
 
     if (!updated) {
-      logger.warning("User " + userName + " failed to quit meeting " + title);
-      return false;
+        logger.warning("User " + userName + " failed to quit meeting " + title);
+        return false;
     }
 
-    m_storage->deleteMeeting([](const Meeting& m) { return m.getParticipator().empty(); });
+    m_storage->deleteMeeting(
+        [](const Meeting &m) { return m.getParticipator().empty(); });
     logger.info("User " + userName + " quitted meeting " + title);
     return updated;
 }
@@ -219,7 +236,7 @@ bool AgendaService::createMeeting(
     // Input data is invalid
     if (!Date::isValid(s) || !Date::isValid(e) || s >= e ||
         participator.empty()) {
-          logger.warning("Input is invalid");
+        logger.warning("Input is invalid");
         return false;
     }
 
@@ -229,10 +246,9 @@ bool AgendaService::createMeeting(
                  return title == m.getTitle();
              })
              .empty()) {
-               logger.warning("There is already a meeting named " + title);
-               return false;
-             }
-        
+        logger.warning("There is already a meeting named " + title);
+        return false;
+    }
 
     // Sponsor does not exist
     if (m_storage
@@ -240,10 +256,9 @@ bool AgendaService::createMeeting(
                 return user.getName() == userName;
             })
             .empty()) {
-              logger.warning("User " + userName + "does not exist");
-              return false;
-            }
-        
+        logger.warning("User " + userName + "does not exist");
+        return false;
+    }
 
     // Sponsor is busy
     if (!m_storage
@@ -253,10 +268,9 @@ bool AgendaService::createMeeting(
                          m.isParticipator(userName));
              })
              .empty()) {
-               logger.warning("Sponsor " + userName + " is busy");
-               return false;
-             }
-        
+        logger.warning("Sponsor " + userName + " is busy");
+        return false;
+    }
 
     Meeting meeting(userName, {}, s, e, title);
 
@@ -267,10 +281,9 @@ bool AgendaService::createMeeting(
                     return user.getName() == name;
                 })
                 .empty()) {
-                  logger.warning("Participator " + name + " does not exist");
-                  return false;
-                }
-            
+            logger.warning("Participator " + name + " does not exist");
+            return false;
+        }
 
         // Participator is busy
         if (!m_storage
@@ -280,15 +293,14 @@ bool AgendaService::createMeeting(
                             !(s >= m.getEndDate() || e <= m.getStartDate());
                  })
                  .empty()) {
-                   logger.warning("Participator " + name + "  is busy");
-                   return false;
-                 }
-            
+            logger.warning("Participator " + name + "  is busy");
+            return false;
+        }
 
         // Duplications of participators
         if (meeting.isParticipator(name) || name == userName) {
-          logger.warning("Participator " + name + "  is duplicated");
-          return false;
+            logger.warning("Participator " + name + "  is duplicated");
+            return false;
         }
 
         meeting.addParticipator(name);

@@ -84,8 +84,9 @@ def delete_all_meetings(request):
     return Response({"success": success})
 
 
-@api_view(['DELETE'])
-def delete_meeting(request, title):
+@api_view(['POST'])
+def delete_meeting(request):
+    title = request.data['title']
     success = pyagenda.delete_meeting(request.user.username, title)
     return Response({"success": success})
 
@@ -113,10 +114,10 @@ def add_participator(request, title):
     success = pyagenda.add_participator(username, title, participator)
     return Response({"success": success})
 
-@api_view(['DELETE'])
-def remove_participator(request, title, participator):
+@api_view(['POST'])
+def remove_participator(request):
     user = request.user
     username = user.username
-    print(title, participator)
+    title, participator = request.data['title'], request.data['participator']
     success = pyagenda.remove_participator(username, title, participator)
     return Response({"success": success})
