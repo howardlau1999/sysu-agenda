@@ -28,6 +28,8 @@ class MeetingsTable extends React.Component {
   render() {
     const { classes } = this.props;
     const meetings = this.props.meetings;
+    const is_query = this.props.is_query;
+    if (!meetings || meetings.length === 0) return (<h2>No meetings.</h2>)
     return (
       <Paper className={classes.root}>
         <Table className={classes.table}>
@@ -61,21 +63,24 @@ class MeetingsTable extends React.Component {
                               onDelete={this.props.onDelete}
                               allowDelete={meeting.is_sponsor}
                               key={username}
+                              is_query={is_query}
                             />
                           ))
                         : null}
-                        {meeting.is_sponsor && (<ParticipatorAdder title={meeting.title} onSuccess={this.props.onDelete} />)}
+                        {meeting.is_sponsor && (<ParticipatorAdder is_query={is_query} title={meeting.title} onSuccess={this.props.onDelete} />)}
                         </div>
                     </TableCell>
 
                     <TableCell>
                       {meeting.is_sponsor ? (
                         <MeetingDeleter
+                        is_query={is_query}
                           meeting={meeting}
                           onDelete={this.props.onDelete}
                         />
                       ) : (
                         <MeetingQuiter
+                        is_query={is_query}
                           meeting={meeting}
                           onDelete={this.props.onDelete}
                         />

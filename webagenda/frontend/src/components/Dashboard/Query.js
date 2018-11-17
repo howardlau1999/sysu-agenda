@@ -68,7 +68,7 @@ class Query extends Component {
           </Typography>
           <div className={classes.tableContainer}>
             <Get
-              path="/meetings/"
+              path="/meetings"
               resolve={data => {
                 return data.meetings;
               }}
@@ -107,11 +107,12 @@ class Query extends Component {
                     />
                   </FormControl>
                   <MeetingsTable
+                  is_query={true}
                     meetings={meetings}
                     onDelete={() => {
-                      this.setState({
-                        refresh: true
-                      });
+                      refetch(
+                        "/meeting/" + this.state.query_title
+                      ).catch(console.log);
                     }}
                   />
                 </div>
@@ -125,6 +126,7 @@ class Query extends Component {
 
           <div className={classes.tableContainer}>
             <Get
+            path="/meetings"
               resolve={data => {
                 return data.meetings;
               }}
@@ -190,11 +192,23 @@ class Query extends Component {
                     </FormControl>
                   </MuiPickersUtilsProvider>
                   <MeetingsTable
+                    is_query={true}
                     meetings={meetings}
                     onDelete={() => {
-                      this.setState({
-                        refresh: true
-                      });
+                      refetch(
+                        "/meetings/query_meeting_by_date?start_date=" +
+                          encodeURIComponent(
+                            this.state.query_start.toFormat(
+                              "yyyy-MM-dd/HH:mm"
+                            )
+                          ) +
+                          "&end_date=" +
+                          encodeURIComponent(
+                            this.state.query_end.toFormat(
+                              "yyyy-MM-dd/HH:mm"
+                            )
+                          )
+                      );
                     }}
                   />
                 </div>

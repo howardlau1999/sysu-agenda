@@ -18,9 +18,9 @@ class MeetingParticipator extends Component {
     this.props.showSnackbarMessage("Error deleting participator!");
   };
   render() {
-    const { username, title, allowDelete } = this.props;
+    const { username, title, allowDelete, is_query } = this.props;
     return (
-      <Get lazy path="/remove_participator">
+      <Get lazy path={(is_query ? "/sponsor" : "") + "/remove_participator"}>
         {() => (
           <Mutate
             verb="POST"

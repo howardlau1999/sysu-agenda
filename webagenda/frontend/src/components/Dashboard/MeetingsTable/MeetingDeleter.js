@@ -6,9 +6,9 @@ import { connect } from "react-redux";
 import { showSnackbarMessage } from "../../../redux/actions";
 class MeetingDeleter extends React.Component {
   render() {
-    const { meeting } = this.props;
+    const { meeting, is_query } = this.props;
     return (
-      <Get lazy path="/remove_meeting">
+      <Get lazy path={(is_query ? "/sponsor" : "") + "/remove_meeting"}>
         {() => (
           <Mutate
             verb="POST"

@@ -226,7 +226,7 @@ class ParticipatorAdder extends Component {
     this.setState({ meetingCreatorOpen: false });
   };
   render() {
-    const { classes } = this.props;
+    const { classes, is_query } = this.props;
 
     return (
       <React.Fragment>
@@ -241,9 +241,8 @@ class ParticipatorAdder extends Component {
           <DialogContent>
             <MuiPickersUtilsProvider utils={LuxonUtils}>
               <CssBaseline />
-
               <Get
-                path="../../../users"
+                path={is_query ? "/../users" : "../../../users"}
                 requestOptions={() => ({
                   headers: {
                     Authorization: "JWT " + localStorage.getItem("user_token")
@@ -259,7 +258,7 @@ class ParticipatorAdder extends Component {
               </Get>
 
               <JssProvider>
-                <Get lazy path="/add_participator">
+                <Get lazy path={(is_query ? "/sponsor" : "") + "/add_participator"}>
                   {() => (
                     <Mutate
                       verb="POST"

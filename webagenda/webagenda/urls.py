@@ -23,7 +23,7 @@ urlpatterns = [
     path('api/v1/login', views.user_login),
     path('api/v1/logout', views.user_logout),
     path('api/v1/register', views.user_register),
-    path('api/v1/create_meeting', views.create_meeting),
+    path('api/v1/meetings/sponsor/create_meeting', views.create_meeting),
     path('api/v1/users', views.list_users),
     path('api/v1/users/<path:username>', views.delete_user),
     # path('api/v1/delete/all_meetings', views.delete_all_meetings),
