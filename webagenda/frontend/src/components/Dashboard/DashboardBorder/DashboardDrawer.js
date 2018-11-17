@@ -10,6 +10,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
 import PeopleIcon from "@material-ui/icons/People";
+import SearchIcon from "@material-ui/icons/Search";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 const drawerWidth = 240;
@@ -78,6 +80,18 @@ class DashboardDrawer extends Component {
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText primary="Users" />
+          </ListItem>
+          <ListItem button component={Link} to="/dashboard/search">
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Query meetings" />
+          </ListItem>
+          <ListItem button component={Link} to="/login">
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quit Login" />
           </ListItem>
         </List>
       </Drawer>

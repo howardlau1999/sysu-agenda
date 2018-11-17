@@ -29,6 +29,8 @@ bool AgendaService::deleteUser(const std::string &userName,
     }
 
     logger.info("User " + userName + " was deleted successfully");
+
+    m_storage->sync();
     return true;
 }
 
@@ -51,7 +53,7 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
         return false;
     }
 
-    return m_storage->updateMeeting(
+    int count = m_storage->updateMeeting(
         [&](const Meeting &update) {
             return userName == update.getSponsor() &&
                    title == update.getTitle() &&
@@ -73,6 +75,8 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
                        .empty();  // empty == available
         },
         [participator](Meeting &m) { m.addParticipator(participator); });
+    m_storage->sync();
+    return count;
 }
 
 bool AgendaService::removeMeetingParticipator(const std::string &userName,
@@ -146,16 +150,20 @@ bool AgendaService::deleteMeeting(const std::string &userName,
                                   const std::string &title) {
     Logger logger(classLogger, __func__);
     logger.info("User " + userName + " Try delete meeting " + title);
-    return m_storage->deleteMeeting([userName, title](const Meeting &m) {
+    int count = m_storage->deleteMeeting([userName, title](const Meeting &m) {
         return userName == m.getSponsor() && title == m.getTitle();
     });
+    m_storage->sync();
+    return count;
 }
 
 bool AgendaService::deleteAllMeetings(const std::string &userName) {
     Logger logger(classLogger, __func__);
     logger.info("Delete all meetings by " + userName);
-    return m_storage->deleteMeeting(
+    m_storage->deleteMeeting(
         [userName](const Meeting &m) { return userName == m.getSponsor(); });
+    m_storage->sync();
+    return true;
 }
 
 // Passed
@@ -193,6 +201,7 @@ bool AgendaService::userRegister(const std::string &userName,
 
     m_storage->createUser(User(userName, password, email, phone));
     logger.info(userName + " registered successfully");
+    m_storage->sync();
     return true;
 }
 
@@ -216,6 +225,7 @@ bool AgendaService::quitMeeting(const std::string &userName,
     m_storage->deleteMeeting(
         [](const Meeting &m) { return m.getParticipator().empty(); });
     logger.info("User " + userName + " quitted meeting " + title);
+    m_storage->sync();
     return updated;
 }
 
@@ -308,6 +318,7 @@ bool AgendaService::createMeeting(
 
     m_storage->createMeeting(meeting);
     logger.info("Meeting " + title + " was created");
+    m_storage->sync();
     return true;
 }
 

@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/v1/meetings/sponsor', views.list_sponsor_meetings),
     path('api/v1/meetings/participate', views.list_participate_meetings),
     path('api/v1/meetings/participate/<path:title>', views.quit_meeting),
+    path('api/v1/meetings/query_meeting_by_date', views.query_meeting_by_date),
     path('api/v1/meeting/<path:title>', views.query_meeting_by_title),
     path('api/v1/meetings/sponsor/add_participator', views.add_participator),
     path('api/v1/meeting', views.query_meeting_by_date),

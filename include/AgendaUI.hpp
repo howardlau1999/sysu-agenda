@@ -99,6 +99,21 @@ class AgendaUI {
     void deleteAllMeetings(void);
 
     /**
+     * add meeting participator
+     */
+    void addMeetingParticipator(void);
+
+    /**
+     * remove meeting participator
+     */
+    void removeMeetingParticipator(void);
+
+    /**
+     * quit meeting
+     */
+    void quitMeeting(void);
+
+    /**
      * show the meetings in the screen
      */
     void printMeetings(std::list<Meeting> t_meetings);
@@ -107,7 +122,6 @@ class AgendaUI {
      * print the operation menu
      */
     void printMenu(void);
-    // dates
 
     std::string m_userName;
     std::string m_userPassword;
