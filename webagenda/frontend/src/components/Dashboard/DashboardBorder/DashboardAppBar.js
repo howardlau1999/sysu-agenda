@@ -87,7 +87,7 @@ class DashboardAppBar extends Component {
                 noWrap
                 className={classes.title}
               >
-                Dashboard
+                Agenda
               </Typography>
               <IconButton color="inherit">
                 <Badge badgeContent={0} color="secondary">

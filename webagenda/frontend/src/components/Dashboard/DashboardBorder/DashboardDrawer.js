@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
@@ -10,6 +10,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
 import PeopleIcon from "@material-ui/icons/People";
+import SearchIcon from "@material-ui/icons/Search";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 const drawerWidth = 240;
@@ -46,8 +48,12 @@ const styles = theme=>( {
   }
 });
 class DashboardDrawer extends Component {
+  state = {
+    loggined: localStorage.getItem("loggined")
+  }
   render() {
     const {classes} = this.props;
+    if (!this.state.loggined) return (<Redirect to={"/login"} />);
     return (
       <Drawer
         variant="permanent"
@@ -78,6 +84,21 @@ class DashboardDrawer extends Component {
               <PeopleIcon />
             </ListItemIcon>
             <ListItemText primary="Users" />
+          </ListItem>
+          <ListItem button component={Link} to="/dashboard/search">
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Query meetings" />
+          </ListItem>
+          <ListItem button onClick={() => {
+            localStorage.clear();
+            this.setState({loggined: false});
+          }}>
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quit Login" />
           </ListItem>
         </List>
       </Drawer>

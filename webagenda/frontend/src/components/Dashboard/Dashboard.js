@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import UsersTable from "./UsersTable";
-import MeetingsTable from "./MeetingsTable";
 import { Switch, Route } from "react-router-dom";
-import MeetingCreator from "./MeetingCreator";
 import DashboardBorder from "./DashboardBorder";
+import Meetings from './Meetings';
+import Users from "./Users";
+import Query from "./Query";
 
 const styles = theme => ({
   root: {
@@ -32,7 +31,7 @@ const styles = theme => ({
 });
 class Dashboard extends Component {
   state = {
-    refresh: false
+    loggined: localStorage.getItem("loggined")
   };
   render() {
     const { classes } = this.props;
@@ -46,54 +45,15 @@ class Dashboard extends Component {
             <Switch>
               <Route
                 path="/dashboard/users"
-                component={() => (
-                  <div>
-                    <div className={classes.appBarSpacer} />
-                    <Typography variant="h4" gutterBottom component="h2">
-                      Users
-                    </Typography>
-                    <div className={classes.tableContainer}>
-                      <UsersTable />
-                    </div>
-                  </div>
-                )}
+                component={Users}
               />
               <Route
                 path="/dashboard/meetings"
-                component={() => (
-                  <div>
-                    <div className={classes.appBarSpacer} />
-
-                    <Typography variant="h4" gutterBottom component="h2">
-                      My Sponsored Meetings
-                      <MeetingCreator
-                        onSuccess={() => {
-                          this.setState({
-                            refresh: true
-                          });
-                        }}
-                      />
-                    </Typography>
-                    <div className={classes.tableContainer}>
-                      <MeetingsTable meetingsType="sponsor" onDelete={()=>{
-                        this.setState({
-                          refresh: true
-                        })
-                      }} />
-                    </div>
-
-                    <Typography variant="h4" gutterBottom component="h2">
-                      My Participated Meetings
-                    </Typography>
-                    <div className={classes.tableContainer}>
-                      <MeetingsTable meetingsType="participate" onDelete={()=>{
-                        this.setState({
-                          refresh: true
-                        })
-                      }} />
-                    </div>
-                  </div>
-                )}
+                component={Meetings}
+              />
+              <Route
+                path="/dashboard/search"
+                component={Query}
               />
             </Switch>
           </main>

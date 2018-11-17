@@ -6,10 +6,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { Get } from "restful-react";
 import MeetingDeleter from "./MeetingDeleter";
 import MeetingQuiter from "./MeetingQuiter";
 import MeetingParticipator from "./MeetingParticipator";
+import ParticipatorAdder from "./ParticipatorAdder";
 const styles = {
   root: {
     width: "100%",
@@ -27,7 +27,7 @@ class MeetingsTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const meetingsType = this.props.meetingsType;
+    const meetings = this.props.meetings;
     return (
       <Paper className={classes.root}>
         <Table className={classes.table}>
@@ -43,18 +43,8 @@ class MeetingsTable extends React.Component {
           </TableHead>
 
           <TableBody>
-            <Get
-              path={"/meetings/" + meetingsType}
-              resolve={data => {
-                return data.meetings;
-              }}
-              requestOptions={() => ({
-                headers: {
-                  Authorization: "JWT " + localStorage.getItem("user_token")
-                }
-              })}
-            >
-              {meetings =>
+            
+              {
                 (meetings || []).map(meeting => (
                   <TableRow key={meeting.title}>
                     <TableCell>{meeting.title}</TableCell>
@@ -62,20 +52,24 @@ class MeetingsTable extends React.Component {
                     <TableCell>{meeting.end_date}</TableCell>
                     <TableCell>{meeting.sponsor}</TableCell>
                     <TableCell>
+                      <div>
                       {meeting.participators
                         ? meeting.participators.map(username => (
                             <MeetingParticipator
                               username={username}
                               title={meeting.title}
                               onDelete={this.props.onDelete}
-                              allowDelete={meetingsType === "sponsor"}
+                              allowDelete={meeting.is_sponsor}
+                              key={username}
                             />
                           ))
                         : null}
+                        {meeting.is_sponsor && (<ParticipatorAdder title={meeting.title} onSuccess={this.props.onDelete} />)}
+                        </div>
                     </TableCell>
 
                     <TableCell>
-                      {meetingsType === "sponsor" ? (
+                      {meeting.is_sponsor ? (
                         <MeetingDeleter
                           meeting={meeting}
                           onDelete={this.props.onDelete}
@@ -90,7 +84,7 @@ class MeetingsTable extends React.Component {
                   </TableRow>
                 ))
               }
-            </Get>
+            
           </TableBody>
         </Table>
       </Paper>

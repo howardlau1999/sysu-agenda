@@ -20,7 +20,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContent";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { showSnackbarMessage } from "../redux/actions";
 import { connect } from "react-redux";
 const styles = theme => ({
@@ -53,6 +53,18 @@ const styles = theme => ({
   },
   submit: {
     marginTop: theme.spacing.unit * 3
+  },
+  register: {
+    textAlign: "center",
+    textDecoration: "none",
+    marginTop: 20,
+    color: "#1a0dab",
+    "&:visited": {
+      color: "#1a0dab"
+    }
+  },
+  title: {
+    textAlign: "center"
   }
 });
 
@@ -110,6 +122,7 @@ class Login extends Component {
       <React.Fragment>
         <CssBaseline />
         <main className={classes.layout}>
+        <h1 className={classes.title}> Agenda </h1>
           <Paper className={classes.paper}>
             <Avatar className={classes.avatar}>
               <LockIcon />
@@ -175,6 +188,11 @@ class Login extends Component {
                           >
                             Login
                           </Button>
+                        </FormControl>
+                        <FormControl fullWidth>
+                          <Link className={classes.register} to="/register">
+                            No Account? Register One
+                          </Link>
                         </FormControl>
                       </MaterialUIForm>
                     )}

@@ -2,7 +2,7 @@
 #include <signal.h>
 #include "AgendaService.hpp"
 extern "C" {
-static AgendaService m_agendaService;
+static AgendaService *m_agendaService;
 
 static PyObject* user_login(PyObject* self, PyObject* args) {
     char* username;
@@ -12,7 +12,7 @@ static PyObject* user_login(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    bool success = m_agendaService.userLogIn(username, password);
+    bool success = m_agendaService->userLogIn(username, password);
 
     PyObject* ret = PyBool_FromLong(success);
 
@@ -32,7 +32,7 @@ static PyObject* user_register(PyObject* self, PyObject* args,
     }
 
     bool success =
-        m_agendaService.userRegister(username, password, email, phone);
+        m_agendaService->userRegister(username, password, email, phone);
 
     PyObject* ret = PyBool_FromLong(success);
 
@@ -47,7 +47,7 @@ static PyObject* delete_user(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    bool success = m_agendaService.deleteUser(username, password);
+    bool success = m_agendaService->deleteUser(username, password);
 
     PyObject* ret = PyBool_FromLong(success);
 
@@ -80,7 +80,7 @@ static PyObject* create_meeting(PyObject* self, PyObject* args,
         v_participators.push_back(participator);
     }
 
-    bool success = m_agendaService.createMeeting(username, title, start_date,
+    bool success = m_agendaService->createMeeting(username, title, start_date,
                                                  end_date, v_participators);
     PyObject* ret = PyBool_FromLong(success);
 
@@ -95,7 +95,7 @@ static PyObject* delete_meeting(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    bool success = m_agendaService.deleteMeeting(username, title);
+    bool success = m_agendaService->deleteMeeting(username, title);
 
     PyObject* ret = PyBool_FromLong(success);
 
@@ -109,7 +109,7 @@ static PyObject* delete_all_meetings(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    bool success = m_agendaService.deleteAllMeetings(username);
+    bool success = m_agendaService->deleteAllMeetings(username);
 
     PyObject* ret = PyBool_FromLong(success);
 
@@ -177,7 +177,7 @@ static PyObject* users_to_list(std::list<User> users) {
 }
 
 static PyObject* list_all_users(PyObject* self, PyObject* args) {
-    auto users = m_agendaService.listAllUsers();
+    auto users = m_agendaService->listAllUsers();
     PyObject* ret = users_to_list(users);
 
     return ret;
@@ -189,7 +189,7 @@ static PyObject* list_sponsor_meetings(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "s", &username)) {
         return NULL;
     }
-    auto meetings = m_agendaService.listAllSponsorMeetings(username);
+    auto meetings = m_agendaService->listAllSponsorMeetings(username);
     PyObject* ret = meetings_to_list(meetings);
 
     return ret;
@@ -202,7 +202,7 @@ static PyObject* query_meeting_by_title(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "ss", &username, &title)) {
         return NULL;
     }
-    auto meetings = m_agendaService.meetingQuery(username, title);
+    auto meetings = m_agendaService->meetingQuery(username, title);
     PyObject* ret = meetings_to_list(meetings);
 
     return ret;
@@ -217,7 +217,7 @@ static PyObject* query_meeting_by_date(PyObject* self, PyObject* args) {
         return NULL;
     }
     auto meetings =
-        m_agendaService.meetingQuery(username, start_date, end_date);
+        m_agendaService->meetingQuery(username, start_date, end_date);
     PyObject* ret = meetings_to_list(meetings);
 
     return ret;
@@ -229,7 +229,7 @@ static PyObject* list_participate_meetings(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "s", &username)) {
         return NULL;
     }
-    auto meetings = m_agendaService.listAllParticipateMeetings(username);
+    auto meetings = m_agendaService->listAllParticipateMeetings(username);
     PyObject* ret = meetings_to_list(meetings);
 
     return ret;
@@ -243,7 +243,7 @@ static PyObject* quit_meeting(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    bool result = m_agendaService.quitMeeting(username, title);
+    bool result = m_agendaService->quitMeeting(username, title);
     PyObject* ret = PyBool_FromLong(result);
 
     return ret;
@@ -257,7 +257,7 @@ static PyObject* remove_participator(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "sss", &username, &title, &participator)) {
         return NULL;
     }
-    PyObject* ret = PyBool_FromLong(m_agendaService.removeMeetingParticipator(
+    PyObject* ret = PyBool_FromLong(m_agendaService->removeMeetingParticipator(
         username, title, participator));
 
     return ret;
@@ -272,9 +272,13 @@ static PyObject* add_participator(PyObject* self, PyObject* args) {
         return NULL;
     }
     PyObject* ret = PyBool_FromLong(
-        m_agendaService.addMeetingParticipator(username, title, participator));
+        m_agendaService->addMeetingParticipator(username, title, participator));
 
     return ret;
+}
+
+static void myextension_clear(void*) {
+    m_agendaService->quitAgenda();
 }
 
 static PyMethodDef PyAgendaMethods[] = {
@@ -304,7 +308,10 @@ static PyMethodDef PyAgendaMethods[] = {
     {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef pyagendamodule = {PyModuleDef_HEAD_INIT, "pyagenda",
-                                            NULL, -1, PyAgendaMethods};
+                                            NULL, -1, PyAgendaMethods, NULL, NULL, NULL, myextension_clear};
 
-PyMODINIT_FUNC PyInit_pyagenda() { return PyModule_Create(&pyagendamodule); }
+PyMODINIT_FUNC PyInit_pyagenda() { 
+    m_agendaService = new AgendaService();
+    m_agendaService->startAgenda();
+    return PyModule_Create(&pyagendamodule); }
 }
