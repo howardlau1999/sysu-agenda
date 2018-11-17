@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import MeetingsTable from "./MeetingsTable";
-import MeetingCreator from "./MeetingCreator";
+import MeetingCreator from "./MeetingsTable/MeetingCreator";
 import { Get } from "restful-react";
 
 const styles = theme => ({
@@ -38,40 +38,33 @@ class Meetings extends Component {
         <div>
           <div className={classes.appBarSpacer} />
 
-          <Typography variant="h4" gutterBottom component="h2">
-            My Sponsored Meetings
-            <MeetingCreator
-              onSuccess={() => {
-                this.setState({
-                  refresh: true
-                });
-              }}
-            />
-          </Typography>
-          <div className={classes.tableContainer}>
-            <Get
-              path="/meetings/sponsor"
-              resolve={data => {
-                return data.meetings;
-              }}
-              requestOptions={() => ({
-                headers: {
-                  Authorization: "JWT " + localStorage.getItem("user_token")
-                }
-              })}
-            >
-              {meetings => (
-                <MeetingsTable
-                  meetings={meetings}
-                  onDelete={() => {
-                    this.setState({
-                      refresh: true
-                    });
-                  }}
-                />
-              )}
-            </Get>
-          </div>
+          <Get
+            path="/meetings/sponsor"
+            resolve={data => {
+              return data.meetings;
+            }}
+            requestOptions={() => ({
+              headers: {
+                Authorization: "JWT " + localStorage.getItem("user_token")
+              }
+            })}
+          >
+            {(meetings, states, { refetch }) => {
+              return (
+                <React.Fragment>
+                  <Typography variant="h4" gutterBottom component="h2">
+                    My Sponsored Meetings
+                    <MeetingCreator
+                      onSuccess={refetch}
+                    />
+                  </Typography>
+                  <div className={classes.tableContainer}>
+                    <MeetingsTable meetings={meetings} onDelete={refetch} />
+                  </div>
+                </React.Fragment>
+              );
+            }}
+          </Get>
 
           <Typography variant="h4" gutterBottom component="h2">
             My Participated Meetings
@@ -88,14 +81,10 @@ class Meetings extends Component {
                 }
               })}
             >
-              {meetings => (
+              {(meetings, states, { refetch }) => (
                 <MeetingsTable
                   meetings={meetings}
-                  onDelete={() => {
-                    this.setState({
-                      refresh: true
-                    });
-                  }}
+                  onDelete={refetch}
                 />
               )}
             </Get>

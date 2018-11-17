@@ -9,6 +9,7 @@ import Paper from "@material-ui/core/Paper";
 import MeetingDeleter from "./MeetingDeleter";
 import MeetingQuiter from "./MeetingQuiter";
 import MeetingParticipator from "./MeetingParticipator";
+import ParticipatorAdder from "./ParticipatorAdder";
 const styles = {
   root: {
     width: "100%",
@@ -51,6 +52,7 @@ class MeetingsTable extends React.Component {
                     <TableCell>{meeting.end_date}</TableCell>
                     <TableCell>{meeting.sponsor}</TableCell>
                     <TableCell>
+                      <div>
                       {meeting.participators
                         ? meeting.participators.map(username => (
                             <MeetingParticipator
@@ -62,6 +64,8 @@ class MeetingsTable extends React.Component {
                             />
                           ))
                         : null}
+                        {meeting.is_sponsor && (<ParticipatorAdder title={meeting.title} onSuccess={this.props.onDelete} />)}
+                        </div>
                     </TableCell>
 
                     <TableCell>

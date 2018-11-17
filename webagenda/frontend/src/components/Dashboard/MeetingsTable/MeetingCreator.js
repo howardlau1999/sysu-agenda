@@ -25,7 +25,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { connect } from "react-redux";
-import { showSnackbarMessage } from "../../redux/actions";
+import { showSnackbarMessage } from "../../../redux/actions";
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -276,7 +276,7 @@ class MeetingCreator extends Component {
               <CssBaseline />
 
               <Get
-                path="/users"
+                path="../../../users"
                 requestOptions={() => ({
                   headers: {
                     Authorization: "JWT " + localStorage.getItem("user_token")
