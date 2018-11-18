@@ -9,7 +9,7 @@ import store from "./redux/store";
 
 ReactDOM.render(
   <Provider store={store}>
-    <RestfulProvider base="http://127.0.0.1:8000/api/v1">
+    <RestfulProvider base="https://agenda.howardlau.me/api/v1">
       <Agenda />
     </RestfulProvider>
     </Provider>,

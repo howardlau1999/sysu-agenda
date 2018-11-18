@@ -4,7 +4,6 @@ INC_DIR := include
 SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
-ASIO_DIR := /home/howard/asio-1.12.1/include
 GTEST_DIR := ./gtest-1.6.0
 INCLUDE := -I./$(INC_DIR) 
 TEST_LIBRARY := -L$(GTEST_DIR)/lib -lgtest -lgtest_main
