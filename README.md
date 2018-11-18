@@ -3,7 +3,9 @@
 2018 Sun-yat Sen University software enginnering training project.
 
 Backend: C++
+
 Web Backend: Django (Calling backend via Python extension in C++)
+
 Web Frontend: React
 
 **Live demo:** [https://agenda.howardlau.me](https://agenda.howardlau.me)
@@ -80,9 +82,9 @@ server {
     server_name your.domain;
     root /path/to/your/build;
     index index.html index.htm;
-    location /api {
+    location /api/v1 {
         uwsgi_pass  agenda;
-        include /path/to/webagenda/uwsgi_params;
+        include uwsgi_params;
     }
 }
 
