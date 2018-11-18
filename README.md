@@ -2,6 +2,8 @@
 
 2018 Sun-yat Sen University software enginnering training project.
 
+Live demo: [https://agenda.howardlau.me](https://agenda.howardlau.me)
+
 ### Screenshot
 ![Agenda](https://howardlau.me/wp-content/uploads/2018/11/Screenshot_20181117_151936.png)
 
