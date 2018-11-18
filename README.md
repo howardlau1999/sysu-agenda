@@ -2,6 +2,8 @@
 
 2018 Sun-yat Sen University software enginnering training project.
 
+2018 年中山大学软件工程初级实训项目
+
 Backend: C++
 
 Web Backend: Django (Calling backend via Python extension in C++)
