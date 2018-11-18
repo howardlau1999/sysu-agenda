@@ -2,6 +2,9 @@
 
 2018 Sun-yat Sen University software enginnering training project.
 
+### Screenshot
+<center>![Agenda](https://howardlau.me/wp-content/uploads/2018/11/Screenshot_20181117_151936.png)</center>
+
 # Build and Run
 
 For CLI: 
