@@ -2,7 +2,11 @@
 
 2018 Sun-yat Sen University software enginnering training project.
 
-Live demo: [https://agenda.howardlau.me](https://agenda.howardlau.me)
+Backend: C++
+Web Backend: Django (Calling backend via Python extension in C++)
+Web Frontend: React
+
+**Live demo:** [https://agenda.howardlau.me](https://agenda.howardlau.me)
 
 ### Screenshot
 ![Agenda](https://howardlau.me/wp-content/uploads/2018/11/Screenshot_20181117_151936.png)
@@ -33,7 +37,7 @@ pip install pip -U
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 ``` 
-
+Then you can run the development environment by running:
 ```bash
 pip install . # this installs the pyagenda module
 pip install -r requirements.txt
