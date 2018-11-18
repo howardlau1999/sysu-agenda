@@ -164,6 +164,12 @@ class MeetingCreator extends Component {
   handleCreateSuccess = result => {
     if (result.success) {
       this.handleMeetingCreatorClose();
+      this.setState({
+        startTime: DateTime.local(),
+        endTime: DateTime.local(),
+        participators: [],
+        participatorsSuggestions: [],
+      })
       this.props.onSuccess();
       this.props.showSnackbarMessage("Create meeting successfully!");
     } else this.props.showSnackbarMessage("Create meeting failed!");
