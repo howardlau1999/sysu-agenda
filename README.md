@@ -82,6 +82,9 @@ server {
     server_name your.domain;
     root /path/to/your/build;
     index index.html index.htm;
+    location / {
+        try_files $uri /index.html;
+    }
     location /api/v1 {
         uwsgi_pass  agenda;
         include uwsgi_params;

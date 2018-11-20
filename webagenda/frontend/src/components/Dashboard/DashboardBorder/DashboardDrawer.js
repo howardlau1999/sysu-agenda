@@ -91,6 +91,7 @@ class DashboardDrawer extends Component {
             </ListItemIcon>
             <ListItemText primary="Query meetings" />
           </ListItem>
+          <Divider />
           <ListItem button onClick={() => {
             localStorage.clear();
             this.setState({loggined: false});
