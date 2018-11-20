@@ -2,6 +2,8 @@
 
 2018 Sun-yat Sen University software enginnering training project.
 
+2018 年中山大学软件工程初级实训项目
+
 Backend: C++
 
 Web Backend: Django (Calling backend via Python extension in C++)
@@ -68,7 +70,7 @@ uwsgi --socket webagenda.sock --module webagenda.wsgi --chmod-socket=666 &
 
 Configure the server to pass api requests to `uwsgi` application, here is an example config for `nginx`:
 
-```text
+```nginx
 upstream agenda {
     server unix:///path/to/webagenda/webagenda.sock;
 }
@@ -90,7 +92,6 @@ server {
         include uwsgi_params;
     }
 }
-
 ```
 
 Make sure your new configuration takes effects, then open your browser and point to your domain. That's all.
